@@ -6,7 +6,7 @@ from . models import Debtor, Work, Product
 class createUserForm(UserCreationForm):
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'username', 'password1']
+        fields = ['first_name', 'last_name', 'position', 'username', 'password1']
 class debtorForm(ModelForm):
     
     class Meta:

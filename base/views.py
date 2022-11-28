@@ -6,6 +6,8 @@ from . models import User, Debtor, Work, Product
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from . forms import debtorForm, workForm, productForm, paymentForm, createUserForm
+from django.contrib.auth.models import Group
+# from django.contrib.auth.models import permissions
 
 
 def loginpage(request):
@@ -28,14 +30,6 @@ def logoutpage(request):
     logout(request)
     return redirect('/')
 
-def createUser(request):
-    form = createUserForm()
-    if request.method == 'POST':
-        form = createUserForm(request.POST)
-        if form.is_valid:
-            form.save()  
-    return render(request,'user/createUser.html', {'form':form} )  
-
 def dashboard(request):
     debtors = Debtor.objects.all()
     total_amount = Debtor()
@@ -47,7 +41,6 @@ def dashboard(request):
             all_total_amounts += amounts
     
     print(all_total_amounts)
-    
     context = {
         'debtors': debtors.count(),
         'total': all_total_amounts
@@ -65,11 +58,11 @@ def debtors(request):
         Q(product__second_payment__icontains = q)|
         Q(product__final_payment__icontains = q)|
         Q(work__employer__contains = q)
-    )
+    ) &  Debtor.objects.filter(user = request.user.id)
+    
     overdue_thirty = Debtor()
     overdue_sixty = Debtor()
     overdue_ninety = Debtor()
-    
     
     context = {
         'debtors': debtors,
@@ -180,7 +173,8 @@ def payment(request):
     debtors = Debtor.objects.filter(
         Q(name__icontains =  q)|
         Q(surname__icontains = q)
-    )
+    )&  Debtor.objects.filter(user = request.user.id)
+    
     context = {
         'debtors':debtors
     }
@@ -244,6 +238,31 @@ def finalOverdues(request):
     
     return render(request, 'debtors/overdues/finalOverdues.html', context)
 
+# Users
 def userManagement(request):
     users = User.objects.all()
+    print(users)
+    for k in users:
+        print(k['position'])
     return render(request, 'user/userManagement.html', {'users': users})
+
+def createUser(request):
+    # permissions = Permissions.objects.all()
+    # print(permissions)
+    form = createUserForm()
+    if request.method == 'POST':
+        form = createUserForm(request.POST)
+        print(request.POST)
+        if form.is_valid:
+            user_obj = form.save(commit = False)
+            # if user_obj.position == 'sales':
+            #     g = Group.objects.get(name='Sales') 
+            #     g.user_set.add(user_obj)
+            form.save()
+
+        g = Group.objects.get(name='sales')
+        users = User.objects.all()
+        for u in users:
+            print(u)
+            # g.user_set.add(u)
+    return render(request,'user/createUser.html', {'form':form} )  

@@ -10,7 +10,7 @@ gender = (
 )
 #System User
 class User(AbstractUser):
-    email = models.EmailField(unique=True, max_length=254)
+    # email = models.EmailField(unique=True, max_length=254, null = True, blank = True)
     position = models.CharField(max_length=50, )
     image = models.ImageField(upload_to='profile', blank = True, default = 'profile/avatar.svg')
 
@@ -52,7 +52,7 @@ class Debtor(models.Model):
     
     @property
     def total(self):
-        debtor_thirty_amounts = Debtor.objects.aggregate(Sum('product__first_payment')) 
+        debtor_thirty_amounts = Debtor.objects.aggregate(Sum('product__first_payment'))
         debtor_sixty_amounts = Debtor.objects.aggregate(Sum('product__second_payment')) 
         debtor_final_amounts = Debtor.objects.aggregate(Sum('product__final_payment')) 
 
