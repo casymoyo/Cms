@@ -31,4 +31,7 @@ urlpatterns = [
     path('overdues/secondOverdues', views.secondOverdues, name='secondOverdues'),
     path('overdues/finalOverdues', views.finalOverdues, name='finalOverdues'),
 
+    # cancel
+    path('cancelDebtor/<int:pk>', views.cancelDebtor, name='cancelDebtor'),
+
 ]

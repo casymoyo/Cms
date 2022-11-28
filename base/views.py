@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from . forms import debtorForm, workForm, productForm, paymentForm, createUserForm
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import permission_required, login_required
 # from django.contrib.auth.models import permissions
 
 
@@ -30,6 +31,7 @@ def logoutpage(request):
     logout(request)
     return redirect('/')
 
+@login_required(login_url = 'login')
 def dashboard(request):
     debtors = Debtor.objects.all()
     total_amount = Debtor()
@@ -41,12 +43,14 @@ def dashboard(request):
             all_total_amounts += amounts
     
     print(all_total_amounts)
+
     context = {
         'debtors': debtors.count(),
         'total': all_total_amounts
     }
     return render(request, 'dashboard.html', context)
 
+@login_required(login_url = 'login')
 def debtors(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     debtors = Debtor.objects.filter(
@@ -72,6 +76,7 @@ def debtors(request):
     }
     return render(request, 'debtors/debtors.html', context)
 
+@login_required(login_url = 'login')
 def debtor(request, pk):
     deb = Debtor.objects.get(pk=pk)
 
@@ -80,6 +85,17 @@ def debtor(request, pk):
     }
     return render(request, 'debtors/debtor.html', context)
 
+@login_required(login_url = 'login')
+def cancelDebtor(request, pk):
+    debtor = Debtor.objects.get(pk=pk)
+    context = {
+        'debtor': debtor
+    }
+    print(debtor)
+    return render(request, 'debtors/debtor.html', context)
+
+@permission_required('base.add_debtor')
+@login_required(login_url = 'login')
 def createDebtor(request):
     debtors = Debtor.objects.all()
     form = debtorForm()
@@ -90,7 +106,8 @@ def createDebtor(request):
             debtor_obj = form.save(commit=False)
             debtor_obj.user = request.user
             debtor_obj.save()
-            return redirect('createDebtor')
+            return redirect('debtors')
+            messages.add_message(request, messages.SUCCESS, 'Debtor successfully added')
         else:
             messages.add_message(request, messages.WARNING, '* fill in all the required details')
             return redirect('createDebtor')  
@@ -99,6 +116,7 @@ def createDebtor(request):
     }
     return render(request, 'debtors/createDebtor.html', context)
 
+@login_required(login_url = 'login')
 def createWork(request, pk):
     deb = Debtor.objects.get(pk = pk)
     form = workForm()
@@ -110,7 +128,8 @@ def createWork(request, pk):
             work_obj.id = deb.id
             work_obj.debtor_id = deb.id
             work_obj.save()
-            return createProduct(request, pk)
+            return redirect('debtors')
+            messages.add_message(request, messages.SUCCESS, 'Work details successfully added')
         else:
             messages.add_message(request, messages.WARNING, '* fill in all the required details')
             return redirect('createDebtor')
@@ -119,6 +138,7 @@ def createWork(request, pk):
     }
     return render(request, 'debtors/createWork.html', context)
 
+@login_required(login_url = 'login')
 def updateWork(request, pk):
     work = Work.objects.get(pk = pk)
 
@@ -134,6 +154,7 @@ def updateWork(request, pk):
     }
     return render(request, 'debtors/createWork.html', context)
 
+@login_required(login_url = 'login')
 def createProduct(request, pk):
     deb = Debtor.objects.get(pk = pk)
     form = productForm()
@@ -144,7 +165,8 @@ def createProduct(request, pk):
             product_obj.id = deb.id
             product_obj.debtor_id = deb.id
             product_obj.save()
-            return debtor(request, pk)
+            return redirect('debtors')
+            messages.add_message(request, messages.SUCCESS, 'Product details successfully added')
         else:
             messages.add_message(request, messages.WARNING, '* fill in all the required details')
             return redirect('createProduct')
@@ -153,6 +175,7 @@ def createProduct(request, pk):
     }
     return render(request, 'debtors/createProduct.html', context)
 
+@login_required(login_url = 'login')
 def updateProduct(request, pk):
     product = Product.objects.get(pk = pk)
 
@@ -168,6 +191,7 @@ def updateProduct(request, pk):
     }
     return render(request, 'debtors/createProduct.html', context)
 
+@login_required(login_url = 'login')
 def payment(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     debtors = Debtor.objects.filter(
@@ -180,7 +204,7 @@ def payment(request):
     }
     return render(request, 'debtors/payment.html', context)
 
-
+@login_required(login_url = 'login')
 def updatePayment(request, pk):
     product = Product.objects.get(pk = pk)
 
@@ -198,6 +222,7 @@ def updatePayment(request, pk):
 
 # overdues
 
+@login_required(login_url = 'login')
 def overdues(request):
     overdues = Debtor()
     print(overdues.due_in_sixty)
@@ -211,6 +236,7 @@ def overdues(request):
     
     return render(request, 'debtors/overdues/overdues.html', context)
 
+@login_required(login_url = 'login')
 def firstOverdues(request):
     overdues = Debtor()
 
@@ -220,6 +246,7 @@ def firstOverdues(request):
     
     return render(request, 'debtors/overdues/firstOverdues.html', context)
 
+@login_required(login_url = 'login')
 def secondOverdues(request):
     overdues = Debtor()
 
@@ -229,6 +256,7 @@ def secondOverdues(request):
     
     return render(request, 'debtors/overdues/secondOverdues.html', context)
 
+@login_required(login_url = 'login')
 def finalOverdues(request):
     overdues = Debtor()
 
@@ -239,6 +267,7 @@ def finalOverdues(request):
     return render(request, 'debtors/overdues/finalOverdues.html', context)
 
 # Users
+@login_required(login_url = 'login')
 def userManagement(request):
     users = User.objects.all()
     print(users)
@@ -246,6 +275,7 @@ def userManagement(request):
         print(k['position'])
     return render(request, 'user/userManagement.html', {'users': users})
 
+@login_required(login_url = 'login')
 def createUser(request):
     # permissions = Permissions.objects.all()
     # print(permissions)
