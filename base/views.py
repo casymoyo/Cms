@@ -243,3 +243,7 @@ def finalOverdues(request):
     }
     
     return render(request, 'debtors/overdues/finalOverdues.html', context)
+
+def userManagement(request):
+    users = User.objects.all()
+    return render(request, 'user/userManagement.html', {'users': users})

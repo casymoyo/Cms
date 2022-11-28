@@ -83,4 +83,44 @@ form label{
             </div>
         </section>
 </div>
+<script>
+    let deposit = document.getElementById('id_deposit')
+    let firstPayment = document.getElementById('id_first_payment')
+    let secondPayment = document.getElementById('id_second_payment')
+    let finalPayment  = document.getElementById('id_final_payment')
+
+    if(deposit.value == 0){
+            firstPayment.style.display='none';
+            secondPayment.style.display='none';
+            finalPayment.style.display='none';
+        }
+        else if((deposit.value != 0) & (firstPayment.value == 0)) {
+            deposit.style.display='none';
+            secondPayment.style.display='none';
+            finalPayment.style.display='none';
+        }
+        else if((deposit.value != 0) & 
+            (firstPayment.value != 0)& 
+            (secondPayment.value == 0)) {
+
+            deposit.style.display='none';
+            firstPayment.style.display='none';
+            finalPayment.style.display='none';
+        }
+        else if((deposit.value != 0) & 
+            (firstPayment.value != 0)& 
+            (secondPayment.value != 0)&
+            (finalPayment.value == 0)) {
+
+            deposit.style.display='none';
+            firstPayment.style.display='none';
+            secondPayment.style.display='none';
+        }else{
+            console.log('all payments are met')
+            deposit.style.display='none';
+            firstPayment.style.display='none';
+            secondPayment.style.display='none';
+            finalPayment.style.display='none';
+        }
+</script>
 {% endblock content %}

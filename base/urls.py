@@ -7,6 +7,7 @@ urlpatterns = [
     path('logout/', views.logoutpage, name='logout'),
 
     #users
+    path('userManagement/', views.userManagement, name='userManagement'),
     path('createUser/', views.createUser, name='createUser'),
 
     # debtors

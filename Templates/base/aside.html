@@ -46,7 +46,7 @@
             </li>
             {% if request.user.position == 'admin' %}
                 <li>
-                    <a href=""><i class="bi bi-person-plus"></i>
+                    <a href="{% url 'userManagement'%}"><i class="bi bi-person-plus"></i>
                         Manage Users
                     </a>
                 </li>
