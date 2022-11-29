@@ -29,7 +29,7 @@ class Debtor(models.Model):
     gender = models.CharField(max_length=50, choices = gender)
     address = models.CharField(max_length=50)
     phonenumber = models.CharField(max_length=50)
-    status = models.CharField(max_length=50, null = True, blank = True )
+    status = models.CharField(max_length=50, default = '' )
     created = models.DateField(auto_now_add=True)
     first_payment_date = models.DateField(default = date.today() + timedelta(days=30), null = True)
     second_payment_date = models.DateField(default = date.today() + timedelta(days=60), null = True)

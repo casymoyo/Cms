@@ -52,6 +52,7 @@ def dashboard(request):
 
 @login_required(login_url = 'login')
 def debtors(request):
+    canclledCount = Debtor.objects.filter(status = 'cancelled').count()
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     debtors = Debtor.objects.filter(
         Q(name__icontains =  q)|
@@ -61,8 +62,8 @@ def debtors(request):
         Q(product__first_payment__icontains = q)|
         Q(product__second_payment__icontains = q)|
         Q(product__final_payment__icontains = q)|
-        Q(work__employer__contains = q)
-    ) &  Debtor.objects.filter(user = request.user.id)
+        Q(work__employer__contains = q) 
+    ) &  Debtor.objects.filter(user = request.user.id) & Debtor.objects.filter(status = '')
     
     overdue_thirty = Debtor()
     overdue_sixty = Debtor()
@@ -73,6 +74,7 @@ def debtors(request):
         'overdue_thirty':overdue_thirty.due_in_thirty.count(),
         'overdue_sixty':overdue_thirty.due_in_sixty.count(),
         'overdue_ninety':overdue_thirty.due_in_ninety.count(),
+        'cancelledCount':canclledCount,
     }
     return render(request, 'debtors/debtors.html', context)
 
@@ -83,15 +85,6 @@ def debtor(request, pk):
     context = {
         'debtor': deb
     }
-    return render(request, 'debtors/debtor.html', context)
-
-@login_required(login_url = 'login')
-def cancelDebtor(request, pk):
-    debtor = Debtor.objects.get(pk=pk)
-    context = {
-        'debtor': debtor
-    }
-    print(debtor)
     return render(request, 'debtors/debtor.html', context)
 
 @permission_required('base.add_debtor')
@@ -116,6 +109,39 @@ def createDebtor(request):
     }
     return render(request, 'debtors/createDebtor.html', context)
 
+@login_required(login_url = 'login')
+def cancelledDebtorList(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    cancelledDebtors = Debtor.objects.filter(
+        Q(name__icontains =  q)|
+        Q(created__icontains =  q)
+    ) & Debtor.objects.filter(status = 'cancelled')
+    return render(request, 'debtors/cancel/cancelledDebtors.html', {'cancelledDebtors':cancelledDebtors})
+
+@login_required(login_url = 'login')
+def cancelDebtor(request, pk):
+    debtor = Debtor.objects.get(pk=pk)
+    if debtor.status != 'cancelled':
+        debtor.status = 'cancelled'
+        debtor.save()
+        messages.add_message(request, messages.SUCCESS, f'{debtor.name} was successfully cancelled')
+        return redirect('debtors')
+    else:
+        messages.add_message(request, messages.WARNING, f'{debtor.name} was already cancelled')
+        return redirect('debtors')
+
+@login_required(login_url = 'login')
+def revertCancellation(request, pk):
+    debtor = Debtor.objects.get(pk=pk)
+    if debtor.status == 'cancelled':
+        debtor.status = ''
+        debtor.save()
+        messages.add_message(request, messages.SUCCESS, f'{debtor.name} cancellation successfully reverted')
+        return redirect('cancelledDebtorList')
+    else:
+        messages.add_message(request, messages.WARNING, f'{debtor.name} cancellation not reverted')
+        return redirect('cancelledDebtorList')
+# debtor work details
 @login_required(login_url = 'login')
 def createWork(request, pk):
     deb = Debtor.objects.get(pk = pk)

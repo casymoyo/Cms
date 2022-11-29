@@ -8,6 +8,12 @@
     .messages{
 
     }
+    .table thead, tbody{
+        box-shadow:  0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .table td, .table td a{
+        color: #fff;
+    }
 </style>
 <div class="dash">
     {% include 'base/aside.html' %}
@@ -34,10 +40,12 @@
                         <a href="{% url 'overdues' %}" class="btn btn-light px-2">
                             Overdue Debtors
                         </a>
-                        <form action="" method="get">
-                            <input type="text" name="q" value="fully paid" hidden>
-                            <button class="btn btn btn-light" type="submit">Fully paid Debtors</button>
-                        </form>
+                        {% if request.user.position == 'admin' %}
+                        <a href="{% url 'cancelledDebtorList' %}" class="btn btn-light px-2">
+                            Cancelled debtors
+                            <div class="badge" style="color: #f06721;">{{cancelledCount}}</div>
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
                     <table class="table table-striped table-responsive table-hover" id="table">
@@ -60,10 +68,10 @@
                         <tbody>
                             {% for debtor in debtors %}
                             <tr>
-                                <td><a href="{% url 'debtor' debtor.id %}" style="text-decoration:none;">{{debtor.name}}</a></td>
-                                <td>{{debtor.surname}}</td>
-                                <td>{{debtor.product}}</td>
-                                <td class="">${{debtor.product.deposit}}</td>
+                                <td style="background:#f06621bc;"><a href="{% url 'debtor' debtor.id %}" style="text-decoration:none;">{{debtor.name}}</a></td>
+                                <td style="background:#f06621bc;">{{debtor.surname}}</td>
+                                <td style="background:#f06621bc;">{{debtor.product}}</td>
+                                <td style="background:#f06621bc;" class="">${{debtor.product.deposit}}</td>
 
                                 <td class="bg-secondary text-light">
                                     <span class="payment">${{debtor.product.first_payment}}</span>

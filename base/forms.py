@@ -31,3 +31,8 @@ class paymentForm(ModelForm):
         model = Product
         exclude = ("debtor", "product", "product_sn",)
 
+class cancelForm(ModelForm):
+    class Meta:
+        model = Debtor
+        fields = ("status",)
+
