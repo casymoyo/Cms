@@ -68,9 +68,11 @@ form label{
             <div class="container">
                 <div class="form d-flex justify-content-center py-5 mt-4">
                     <form action="" method="post" class="d-flex justify-content-center flex-column">
+                        <div id="error" role="alert"></div>
                         {% csrf_token %}
                         {{form.as_table}}
-                        <button class="btn btn-dark">Submit</button>
+                        <button class="btn btn-primary" type="button" id="btn-1" class="py-2">done</button>
+                        <button class="btn btn-dark" type="submit" id="btn-2">Submit</button>
                         {% if messages %}
                         <ul class="messages">
                             {% for message in messages %}
@@ -88,7 +90,28 @@ form label{
     let firstPayment = document.getElementById('id_first_payment')
     let secondPayment = document.getElementById('id_second_payment')
     let finalPayment  = document.getElementById('id_final_payment')
+    let data = JSON.parse("{{data|escapejs}}");
+    let product_amount = data['product_amount'];
+    let btn1 = document.getElementById('btn-1')
+    let btn2 = document.getElementById('btn-2')
+    
+    btn2.disabled = true;
 
+    btn1.addEventListener(
+        'click', function (){
+            total = (Number(deposit.value) + Number(firstPayment.value) + Number(secondPayment.value) + Number(finalPayment.value))
+            if(total > Number(product_amount)){
+                let difference = Number(product_amount - total)
+                let error = document.querySelector('#error').innerHTML = `Total payments $${total} cant be above total selling amount $${product_amount}`; 
+                error.classList.add('alert alert-warning');
+                console.log(finalPayment.value)
+            }
+            else{
+                btn1.disabled = true;
+                btn2.disabled = false;
+            }
+        }
+    )
     if(deposit.value == 0){
             firstPayment.style.display='none';
             secondPayment.style.display='none';
@@ -122,5 +145,7 @@ form label{
             secondPayment.style.display='none';
             finalPayment.style.display='none';
         }
+
+        
 </script>
 {% endblock content %}

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
     path('', views.loginpage, name='login'),
@@ -11,7 +12,7 @@ urlpatterns = [
     path('createUser/', views.createUser, name='createUser'),
 
     # debtors
-    path("debtors/", views.debtors, name="debtors"),
+    path("debtors", views.debtors, name="debtors"),
     path('debtor/<int:pk>/', views.debtor, name = 'debtor'),
     path('payment', views.payment, name = 'payment'),
 
@@ -36,4 +37,6 @@ urlpatterns = [
     path('cancelDebtor/<int:pk>', views.cancelDebtor, name='cancelDebtor'),
     path('revertCancellation/<int:pk>', views.revertCancellation, name='revertCancellation'),
 
+
 ]
+urlpatterns = format_suffix_patterns(urlpatterns)

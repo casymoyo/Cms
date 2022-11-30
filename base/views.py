@@ -1,13 +1,15 @@
 from datetime import datetime, date, time, timedelta
+from django.http import HttpResponse
 from django.db.models import Q
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from . models import User, Debtor, Work, Product
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from . forms import debtorForm, workForm, productForm, paymentForm, createUserForm
+from . forms import debtorForm, workForm, productForm, paymentForm, UpdatePaymentForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import permission_required, login_required
+from json import dumps
 # from django.contrib.auth.models import permissions
 
 
@@ -17,9 +19,10 @@ def loginpage(request):
 
         username = request.POST['username']
         password = request.POST['password']
-
+        
         user = authenticate(username = username, password = password)
         if user is not None:    
+            request.session['username'] = username
             login(request, user)
             return redirect('dashboard')
         else:
@@ -40,7 +43,7 @@ def dashboard(request):
     for debtor_amounts in total_amount.total:
         print(debtor_amounts)
         for amounts in debtor_amounts.values():
-            all_total_amounts += amounts
+            all_total_amounts = amounts + all_total_amounts
     
     print(all_total_amounts)
 
@@ -58,12 +61,11 @@ def debtors(request):
         Q(name__icontains =  q)|
         Q(created__icontains =  q)|
         Q(product__deposit__icontains =  q)|
-        # Q(product__icontains =  q)|
         Q(product__first_payment__icontains = q)|
         Q(product__second_payment__icontains = q)|
         Q(product__final_payment__icontains = q)|
         Q(work__employer__contains = q) 
-    ) &  Debtor.objects.filter(user = request.user.id) & Debtor.objects.filter(status = '')
+    ) &  Debtor.objects.filter(user = request.user.id) & Debtor.objects.filter(status = '') 
     
     overdue_thirty = Debtor()
     overdue_sixty = Debtor()
@@ -80,8 +82,10 @@ def debtors(request):
 
 @login_required(login_url = 'login')
 def debtor(request, pk):
-    deb = Debtor.objects.get(pk=pk)
-
+    try:
+        deb = Debtor.objects.get(pk=pk)
+    except Debtor.DoesNotExist:
+        return HttpResponse(status=404)
     context = {
         'debtor': deb
     }
@@ -141,6 +145,7 @@ def revertCancellation(request, pk):
     else:
         messages.add_message(request, messages.WARNING, f'{debtor.name} cancellation not reverted')
         return redirect('cancelledDebtorList')
+
 # debtor work details
 @login_required(login_url = 'login')
 def createWork(request, pk):
@@ -182,7 +187,11 @@ def updateWork(request, pk):
 
 @login_required(login_url = 'login')
 def createProduct(request, pk):
-    deb = Debtor.objects.get(pk = pk)
+    try:
+        deb = Debtor.objects.get(pk = pk)
+    except deb.DoesNotExist:
+        return HttpResponse(status=404)
+
     form = productForm()
     if request.method == 'POST':
         form = productForm(request.POST)
@@ -190,6 +199,7 @@ def createProduct(request, pk):
             product_obj = form.save(commit = False)
             product_obj.id = deb.id
             product_obj.debtor_id = deb.id
+            product_obj.total = request.POST['deposit']
             product_obj.save()
             return redirect('debtors')
             messages.add_message(request, messages.SUCCESS, 'Product details successfully added')
@@ -232,17 +242,31 @@ def payment(request):
 
 @login_required(login_url = 'login')
 def updatePayment(request, pk):
+    amount ={}
     product = Product.objects.get(pk = pk)
+    
+    amount['product_amount'] = str(product.product_amount)
+    dataJSON = dumps(amount)
 
-    form = paymentForm(request.POST or None, instance = product)
+    form = UpdatePaymentForm(request.POST or None, instance = product)
 
     if form.is_valid():
-        form.save()
+        payment_obj = form.save(commit = False)
+        payment_obj.total = product.deposit + product.first_payment + product.second_payment + product.final_payment
+        if product.deposit + payment_obj.first_payment == product.product_amount:
+            payment_obj.is_fully_paid = 'yes'
+        elif product.deposit + product.first_payment + payment_obj.second_payment == product.product_amount:
+            payment_obj.is_fully_paid = 'yes'
+        elif product.deposit + product.first_payment + product.second_payment + payment_obj.final_payment == product.product_amount:
+            payment_obj.is_fully_paid = 'yes'
+        payment_obj.save()
         messages.add_message(request, messages.SUCCESS, f'{product.debtor.name} payment details updated successfully')
         return redirect('debtors')
+
     context = {
         'form':form,
-        'name': product.debtor.name
+        'name': product.debtor.name,
+        'data': dataJSON
     }
     return render(request, 'debtors/createPayment.html', context)
 
@@ -297,9 +321,7 @@ def finalOverdues(request):
 def userManagement(request):
     users = User.objects.all()
     print(users)
-    for k in users:
-        print(k['position'])
-    return render(request, 'user/userManagement.html', {'users': users})
+    return render(resquest, 'user/userManagement.html', {'users': users})
 
 @login_required(login_url = 'login')
 def createUser(request):
@@ -310,15 +332,15 @@ def createUser(request):
         form = createUserForm(request.POST)
         print(request.POST)
         if form.is_valid:
-            user_obj = form.save(commit = False)
+            # user_obj = form.save(commit = False)
             # if user_obj.position == 'sales':
             #     g = Group.objects.get(name='Sales') 
             #     g.user_set.add(user_obj)
             form.save()
 
-        g = Group.objects.get(name='sales')
-        users = User.objects.all()
-        for u in users:
-            print(u)
+        # g = Group.objects.get(name='sales')
+        # users = User.objects.all()
+        # for u in users:
+        #     print(u)
             # g.user_set.add(u)
     return render(request,'user/createUser.html', {'form':form} )  

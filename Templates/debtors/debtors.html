@@ -40,7 +40,7 @@
                         <a href="{% url 'overdues' %}" class="btn btn-light px-2">
                             Overdue Debtors
                         </a>
-                        {% if request.user.position == 'admin' %}
+                        {% if request.user.is_superuser %}
                         <a href="{% url 'cancelledDebtorList' %}" class="btn btn-light px-2">
                             Cancelled debtors
                             <div class="badge" style="color: #f06721;">{{cancelledCount}}</div>
@@ -52,7 +52,6 @@
                         <caption>List of Debtors</caption>
                         <thead>
                             <th>Name</th>
-                            <th>Surname</th>
                             <th>Product</th>
                             <th>Deposit</th>
                             <th class="">First Payment
@@ -64,12 +63,12 @@
                             <th class="">Final Payment
                                 <span class="badge btn-light"><a href="{% url 'finalOverdues' %}" style="text-decoration: none;">Overdue {{overdue_ninety}}</a></span>
                             </th>
+                            <th>Total</th>
                         </thead>
                         <tbody>
                             {% for debtor in debtors %}
                             <tr>
-                                <td style="background:#f06621bc;"><a href="{% url 'debtor' debtor.id %}" style="text-decoration:none;">{{debtor.name}}</a></td>
-                                <td style="background:#f06621bc;">{{debtor.surname}}</td>
+                                <td style="background:#f06621bc;"><a href="{% url 'debtor' debtor.id %}" style="text-decoration:none;">{{debtor.name}} {{debtor.surname}}</a></td>
                                 <td style="background:#f06621bc;">{{debtor.product}}</td>
                                 <td style="background:#f06621bc;" class="">${{debtor.product.deposit}}</td>
 
@@ -85,6 +84,10 @@
                                 <td class="bg-success text-light">
                                     <span class="payment">${{debtor.product.final_payment}} </span> 
                                     <small id="date">{{debtor.final_payment_date}}</small></td>
+                                <td style="background:#f06621bc;">
+                                    <span id="product_total"> ${{debtor.product.total}}</span>/
+                                    <span id="product_amount"> ${{debtor.product.product_amount}}</span>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -93,19 +96,8 @@
         </section>
 </div>
 <script>
-    // let table = document.getElementById('table');
-    // let tableBody = table.querySelectorAll('.payment')
-
-    // for(let td = 0; td<tableBody.length; td++){
-    //     console.log(tableBody[td].textContent)
-    //     if (tableBody[td].textContent === '$0.00'){
-    //         tableBody[td].textContent = 'to be paid on'
-    //         console.log('empty')
-    //     }else{
-    //         tableBody[td].textContent += 'paid on'
-    //     }
-    // }
-
-
+    let product_amount = document.querySelector('#product_amount').innerHTML
+    let product_total = document.querySelector('#product_total').innerHTML
+    console.log(product_amount)
 </script>
 {% endblock content %}

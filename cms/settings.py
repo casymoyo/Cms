@@ -26,8 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'notifications',
-    'notification',
+    'rest_framework',
+    'cms_apis',
     'base',
 ]
 

@@ -11,7 +11,7 @@ gender = (
 #System User
 class User(AbstractUser):
     # email = models.EmailField(unique=True, max_length=254, null = True, blank = True)
-    position = models.CharField(max_length=50, )
+    position = models.CharField(max_length=50)
     image = models.ImageField(upload_to='profile', blank = True, default = 'profile/avatar.svg')
 
     USERNAME_FIELD = 'username'
@@ -29,7 +29,7 @@ class Debtor(models.Model):
     gender = models.CharField(max_length=50, choices = gender)
     address = models.CharField(max_length=50)
     phonenumber = models.CharField(max_length=50)
-    status = models.CharField(max_length=50, default = '' )
+    status = models.CharField(max_length=50, default = '', blank = True )
     created = models.DateField(auto_now_add=True)
     first_payment_date = models.DateField(default = date.today() + timedelta(days=30), null = True)
     second_payment_date = models.DateField(default = date.today() + timedelta(days=60), null = True)
@@ -78,13 +78,21 @@ class Product(models.Model):
     debtor = models.OneToOneField("base.Debtor", on_delete=models.CASCADE)
     product = models.CharField(max_length=50)
     product_sn = models.CharField(max_length=50)
-    deposit = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True)
-    first_payment = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
-    second_payment = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
-    final_payment = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
+    product_amount = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
+    deposit = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
+    first_payment = models.DecimalField(max_digits=5, decimal_places=2,  default= 0)
+    second_payment = models.DecimalField(max_digits=5, decimal_places=2,   default= 0)
+    final_payment = models.DecimalField(max_digits=5, decimal_places=2, default= 0)
+    total = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null = True, default= 0)
+    is_fully_paid = models.CharField(max_length=50, default = 'no', null=True, blank = True)
     created = models.DateField(auto_now_add=True, null = True)
     updated = models.DateField(auto_now=True, null = True)
     
+    # @property
+    # def debtorFull(self, pk):    d
+    #     debtor_first = Debtor.objects.filter(self.first_payment__gte>0)&Debtor.objects.filter(self.debtor = pk)
+    #     debtor_second = Debtor.objects.filter(self.first_payment__gte>0)&Debtor.objects.filter(self.debtor = pk)
+    # ebtor_final = Debtor.objects.filter(self.first_payment__gte>0)&Debtor.objects.filter(self.debtor= pk)
 
     
     
