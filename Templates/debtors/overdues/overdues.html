@@ -1,6 +1,11 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block content %}
+<style>
+    .heading{
+        box-shadow:  0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+</style>
 <div class="dash">
     {% include 'base/aside.html' %}
     <div class="center-panel">
@@ -14,7 +19,7 @@
                             {% endfor %}
                         </ul>
                 {% endif %}
-                <div class="heading d-flex justify-content-between align-items-center mb-4">
+                <div class="heading d-flex justify-content-between align-items-center mb-4 px-2 py-2 bg-secondary text-light">
                     <h4>Overdues</h4>
                     {% comment %} <div class="button d-flex">
                         <form action="" method="get" class="px-2">
@@ -27,6 +32,7 @@
                         </form> {% endcomment %}
                     </div>
                 </div>
+                <div class="container">
                     <table class="table table-striped table-responsive table-hover">
                         <caption>First Payment Overdues</caption>
                         <thead>
@@ -82,6 +88,7 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                </div>
             </div>
         </section>
 </div>

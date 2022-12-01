@@ -39,10 +39,10 @@ def logoutpage(request):
 def dashboard(request):
     debtors = Debtor.objects.all()
     notis = Notifications.objects.all()
+    total_sp = Debtor.objects.aggregate(Sum('product__product_amount'))
     overdues = Debtor()
     total_amount = Debtor()
     all_total_amounts = 0
-
     
     for debtor_amounts in total_amount.total:
         for amounts in debtor_amounts.values():
@@ -50,10 +50,12 @@ def dashboard(request):
                 all_total_amounts = amounts + all_total_amounts
             except:
                 pass
+
     context = {
         'debtors': debtors.count(),
         'total': all_total_amounts,
-        'activities': notis
+        'activities': notis,
+        'total_sp': total_sp['product__product_amount__sum']
     }
     return render(request, 'dashboard.html', context)
 
