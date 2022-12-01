@@ -30,18 +30,18 @@
                             {% endfor %}
                         </ul>
                 {% endif %}
-                <div class="heading d-flex justify-content-between align-items-center mb-4">
-                    <h4>Debtors
+                <div class="heading d-flex justify-content-between align-items-center mb-4 py-2 bg-secondary text-light">
+                    <h4 class="px-2">Debtors
                         <a href="{% url 'createDebtor' %}">
                             <i class="bi bi-plus-lg  px-3" style="color:darkgreen;"></i>
                         </a>
                     </h4>
                     <div class="button d-flex">
-                        <a href="{% url 'overdues' %}" class="btn btn-light px-2">
+                        <a href="{% url 'overdues' %}" class="btn btn-secondary px-2">
                             Overdue Debtors
                         </a>
                         {% if request.user.is_superuser %}
-                        <a href="{% url 'cancelledDebtorList' %}" class="btn btn-light px-2">
+                        <a href="{% url 'cancelledDebtorList' %}" class="btn btn-secondary px-2">
                             Cancelled debtors
                             <div class="badge" style="color: #f06721;">{{cancelledCount}}</div>
                         </a>

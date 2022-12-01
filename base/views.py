@@ -10,6 +10,7 @@ from . forms import debtorForm, workForm, productForm, paymentForm, UpdatePaymen
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import permission_required, login_required
 from json import dumps
+from notis.models import Notifications
 # from django.contrib.auth.models import permissions
 
 
@@ -37,19 +38,22 @@ def logoutpage(request):
 @login_required(login_url = 'login')
 def dashboard(request):
     debtors = Debtor.objects.all()
+    notis = Notifications.objects.all()
+    overdues = Debtor()
     total_amount = Debtor()
     all_total_amounts = 0
 
-    for debtor_amounts in total_amount.total:
-        print(debtor_amounts)
-        for amounts in debtor_amounts.values():
-            all_total_amounts = amounts + all_total_amounts
     
-    print(all_total_amounts)
-
+    for debtor_amounts in total_amount.total:
+        for amounts in debtor_amounts.values():
+            try:
+                all_total_amounts = amounts + all_total_amounts
+            except:
+                pass
     context = {
         'debtors': debtors.count(),
-        'total': all_total_amounts
+        'total': all_total_amounts,
+        'activities': notis
     }
     return render(request, 'dashboard.html', context)
 
@@ -66,18 +70,18 @@ def debtors(request):
         Q(product__final_payment__icontains = q)|
         Q(work__employer__contains = q) 
     ) &  Debtor.objects.filter(user = request.user.id) & Debtor.objects.filter(status = '') 
-    
-    overdue_thirty = Debtor()
-    overdue_sixty = Debtor()
-    overdue_ninety = Debtor()
+    # p = Product.objects.get(pk = 2)
+    # print(p)
+    overdues = Debtor()
     
     context = {
         'debtors': debtors,
-        'overdue_thirty':overdue_thirty.due_in_thirty.count(),
-        'overdue_sixty':overdue_thirty.due_in_sixty.count(),
-        'overdue_ninety':overdue_thirty.due_in_ninety.count(),
+        'overdue_thirty':overdues.due_in_thirty.count(),
+        'overdue_sixty':overdues.due_in_sixty.count(),
+        'overdue_ninety':overdues.due_in_ninety.count(),
         'cancelledCount':canclledCount,
     }
+    print((context))
     return render(request, 'debtors/debtors.html', context)
 
 @login_required(login_url = 'login')
@@ -99,9 +103,18 @@ def createDebtor(request):
     if request.method == 'POST':
         form = debtorForm(request.POST)
         if form.is_valid():
-            print(request.POST)
             debtor_obj = form.save(commit=False)
             debtor_obj.user = request.user
+            # creating notfication
+            notis, created = Notifications.objects.get_or_create(
+                user = request.user,
+                title = f'{debtor_obj.name}',
+                content = f'{request.user} Created {debtor_obj.name}',
+                partial_id = debtor_obj.phonenumber
+            )
+            #saving notificatioin object
+            notis.save()
+            #saving debtor object
             debtor_obj.save()
             return redirect('debtors')
             messages.add_message(request, messages.SUCCESS, 'Debtor successfully added')
@@ -127,6 +140,14 @@ def cancelDebtor(request, pk):
     debtor = Debtor.objects.get(pk=pk)
     if debtor.status != 'cancelled':
         debtor.status = 'cancelled'
+        # creating a nofication
+        notis, created = Notifications.objects.get_or_create(
+                user = request.user,
+                title = f'{debtor.name}',
+                content = f'{request.user} Cancelled {debtor.name}',
+            )
+        #saving notificatioin object
+        notis.save()
         debtor.save()
         messages.add_message(request, messages.SUCCESS, f'{debtor.name} was successfully cancelled')
         return redirect('debtors')
@@ -141,7 +162,7 @@ def revertCancellation(request, pk):
         debtor.status = ''
         debtor.save()
         messages.add_message(request, messages.SUCCESS, f'{debtor.name} cancellation successfully reverted')
-        return redirect('cancelledDebtorList')
+        return redirect('debtors')
     else:
         messages.add_message(request, messages.WARNING, f'{debtor.name} cancellation not reverted')
         return redirect('cancelledDebtorList')
@@ -156,8 +177,16 @@ def createWork(request, pk):
         form = workForm(request.POST)
         if form.is_valid():
             work_obj = form.save(commit = False)
-            work_obj.id = deb.id
+            work_obj.work_id = deb.id
+            print(work_obj.work_id)
             work_obj.debtor_id = deb.id
+            # creating a nofication
+            notis, created = Notifications.objects.get_or_create(
+                user = request.user,
+                title = f'{work_obj.debtor.name}',
+                content = f'{request.user} Created Work Details for {work_obj.debtor.name}',
+            )
+            #saving notificatioin object
             work_obj.save()
             return redirect('debtors')
             messages.add_message(request, messages.SUCCESS, 'Work details successfully added')
@@ -171,11 +200,19 @@ def createWork(request, pk):
 
 @login_required(login_url = 'login')
 def updateWork(request, pk):
-    work = Work.objects.get(pk = pk)
+    work = Work.objects.get(id = pk)
 
     form = workForm(request.POST or None, instance = work)
 
     if form.is_valid():
+        # creating a nofication
+        notis, created = Notifications.objects.get_or_create(
+            user = request.user,
+            title = f'{work.debtor.name}',
+            content = f'{request.user} Updated work details {work.debtor.name}',
+        )
+        #saving notificatioin object
+        notis.save()
         form.save()
         messages.add_message(request, messages.SUCCESS, f'{work.debtor.name} work details updated successfully')
         return redirect('debtors')
@@ -197,9 +234,16 @@ def createProduct(request, pk):
         form = productForm(request.POST)
         if form.is_valid():
             product_obj = form.save(commit = False)
-            product_obj.id = deb.id
+            product_obj.product_id = deb.id
             product_obj.debtor_id = deb.id
             product_obj.total = request.POST['deposit']
+            # creating notification
+            notis, created = Notifications.objects.get_or_create(
+            user = request.user,
+            title = f'{deb.name}',
+            content = f'{request.user} Created Product Details For {deb.name}',
+            )
+            #saving notificatioin object
             product_obj.save()
             return redirect('debtors')
             messages.add_message(request, messages.SUCCESS, 'Product details successfully added')
@@ -218,6 +262,13 @@ def updateProduct(request, pk):
     form = productForm(request.POST or None, instance = product)
 
     if form.is_valid():
+        # creating notification
+        notis, created = Notifications.objects.get_or_create(
+            user = request.user,
+            title = f'{product.debtor.name}',
+            content = f'{request.user} Updated Product Details For {product.Debtor.name}',
+            )
+        #saving notificatioin object
         form.save()
         messages.add_message(request, messages.SUCCESS, f'{product.debtor.name} product details updated successfully')
         return redirect('debtors')
@@ -259,6 +310,13 @@ def updatePayment(request, pk):
             payment_obj.is_fully_paid = 'yes'
         elif product.deposit + product.first_payment + product.second_payment + payment_obj.final_payment == product.product_amount:
             payment_obj.is_fully_paid = 'yes'
+        # creating notification
+        notis, created = Notifications.objects.get_or_create(
+            user = request.user,
+            title = f'{product.debtor.name}',
+            content = f'{request.user} Updated Payments For {product.debtor.name}',
+            )
+        #saving notificatioin object
         payment_obj.save()
         messages.add_message(request, messages.SUCCESS, f'{product.debtor.name} payment details updated successfully')
         return redirect('debtors')
@@ -344,3 +402,6 @@ def createUser(request):
         #     print(u)
             # g.user_set.add(u)
     return render(request,'user/createUser.html', {'form':form} )  
+
+# activities
+

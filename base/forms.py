@@ -17,19 +17,19 @@ class workForm(ModelForm):
     
     class Meta:
         model = Work
-        exclude = ("debtor",)
+        exclude = ("debtor", "work_id")
 
 class productForm(ModelForm):
     
     class Meta:
         model = Product
-        exclude = ("debtor", "first_payment", "second_payment", "final_payment", )
+        exclude = ("debtor", "first_payment", "second_payment", "final_payment", "product_id")
 
 class paymentForm(ModelForm):
     
     class Meta:
         model = Product
-        exclude = ("debtor", "product", "product_sn",)
+        exclude = ("debtor", "product", "product_sn", "product_id")
 
 class UpdatePaymentForm(ModelForm):
     

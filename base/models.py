@@ -3,6 +3,7 @@ from django.db.models import Sum
 from django.contrib.auth.models import AbstractUser
 from datetime import datetime, date, time, timedelta
 import datetime
+import uuid
 
 gender = (
     ('Male','MALE'),
