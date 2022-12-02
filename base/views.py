@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from . models import User, Debtor, Work, Product
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from . forms import debtorForm, workForm, productForm, paymentForm, UpdatePaymentForm
+from . forms import debtorForm, workForm, productForm, paymentForm, UpdatePaymentForm, updateProductForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import permission_required, login_required
 from json import dumps
@@ -40,6 +40,7 @@ def dashboard(request):
     debtors = Debtor.objects.all()
     notis = Notifications.objects.all()
     total_sp = Debtor.objects.aggregate(Sum('product__product_amount'))
+    total_dp = Debtor.objects.aggregate(Sum('product__deposit'))
     overdues = Debtor()
     total_amount = Debtor()
     all_total_amounts = 0
@@ -53,7 +54,7 @@ def dashboard(request):
 
     context = {
         'debtors': debtors.count(),
-        'total': all_total_amounts,
+        'total': all_total_amounts + total_dp['product__deposit__sum'] ,
         'activities': notis,
         'total_sp': total_sp['product__product_amount__sum']
     }
@@ -111,7 +112,7 @@ def createDebtor(request):
             notis, created = Notifications.objects.get_or_create(
                 user = request.user,
                 title = f'{debtor_obj.name}',
-                content = f'{request.user} Created {debtor_obj.name}',
+                content = f'Account Created',
                 partial_id = debtor_obj.phonenumber
             )
             #saving notificatioin object
@@ -146,7 +147,7 @@ def cancelDebtor(request, pk):
         notis, created = Notifications.objects.get_or_create(
                 user = request.user,
                 title = f'{debtor.name}',
-                content = f'{request.user} Cancelled {debtor.name}',
+                content = f'Account Cancelled',
             )
         #saving notificatioin object
         notis.save()
@@ -169,6 +170,15 @@ def revertCancellation(request, pk):
         messages.add_message(request, messages.WARNING, f'{debtor.name} cancellation not reverted')
         return redirect('cancelledDebtorList')
 
+@login_required(login_url = 'login')
+def deleteDebtor(request, pk):
+    try:
+        debtor = Debtor.objects.get(pk = pk)
+        debtor.delete()
+    except:
+        pass
+    return redirect('cancelledDebtorList')
+
 # debtor work details
 @login_required(login_url = 'login')
 def createWork(request, pk):
@@ -186,7 +196,8 @@ def createWork(request, pk):
             notis, created = Notifications.objects.get_or_create(
                 user = request.user,
                 title = f'{work_obj.debtor.name}',
-                content = f'{request.user} Created Work Details for {work_obj.debtor.name}',
+                content = f'Created Work Details',
+                partial_id = work_obj.debtor.phonenumber
             )
             #saving notificatioin object
             work_obj.save()
@@ -211,7 +222,8 @@ def updateWork(request, pk):
         notis, created = Notifications.objects.get_or_create(
             user = request.user,
             title = f'{work.debtor.name}',
-            content = f'{request.user} Updated work details {work.debtor.name}',
+            content = f'Updated work details',
+            partial_id = work.debtor.phonenumber
         )
         #saving notificatioin object
         notis.save()
@@ -243,7 +255,8 @@ def createProduct(request, pk):
             notis, created = Notifications.objects.get_or_create(
             user = request.user,
             title = f'{deb.name}',
-            content = f'{request.user} Created Product Details For {deb.name}',
+            content = f'Created Product Details',
+            partial_id = deb.phonenumber
             )
             #saving notificatioin object
             product_obj.save()
@@ -261,14 +274,15 @@ def createProduct(request, pk):
 def updateProduct(request, pk):
     product = Product.objects.get(pk = pk)
 
-    form = productForm(request.POST or None, instance = product)
+    form = updateProductForm(request.POST or None, instance = product)
 
     if form.is_valid():
         # creating notification
         notis, created = Notifications.objects.get_or_create(
             user = request.user,
             title = f'{product.debtor.name}',
-            content = f'{request.user} Updated Product Details For {product.Debtor.name}',
+            content = f'Updated Product Details',
+            partial_id = product.debtor.phonenumber
             )
         #saving notificatioin object
         form.save()
@@ -316,7 +330,8 @@ def updatePayment(request, pk):
         notis, created = Notifications.objects.get_or_create(
             user = request.user,
             title = f'{product.debtor.name}',
-            content = f'{request.user} Updated Payments For {product.debtor.name}',
+            content = f'Updated Payment',
+            partial_id = product.debtor.phonenumber
             )
         #saving notificatioin object
         payment_obj.save()
@@ -381,7 +396,7 @@ def finalOverdues(request):
 def userManagement(request):
     users = User.objects.all()
     print(users)
-    return render(resquest, 'user/userManagement.html', {'users': users})
+    return render(request, 'user/userManagement.html', {'users': users})
 
 @login_required(login_url = 'login')
 def createUser(request):
@@ -405,5 +420,19 @@ def createUser(request):
             # g.user_set.add(u)
     return render(request,'user/createUser.html', {'form':form} )  
 
-# activities
+def userDebtors(request, pk):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    debtors = Debtor.objects.filter(
+        Q(user = pk) |
+        Q(name__icontains =  q)|
+        Q(created__icontains =  q)|
+        Q(product__deposit__icontains =  q)|
+        Q(product__first_payment__icontains = q)|
+        Q(product__second_payment__icontains = q)|
+        Q(product__final_payment__icontains = q)|
+        Q(work__employer__contains = q)
+    )
+    return render(request, 'user/userDebtors.html', {'debtors':debtors})
+
+
 

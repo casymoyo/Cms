@@ -9,8 +9,9 @@
         <div class="center-panel">
             {% load static %}
 <style>
-     .navbar{
+    .navbar{
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        background: #fff !important;
     }
     .settings-show{
         display: none;
@@ -31,7 +32,7 @@
         color: #333;
     }
     .search{
-        width: 240px;
+        border-radius: 5px;
     }
     .search input{
         border: none;
@@ -39,6 +40,9 @@
     a{
         color: #333;
         text-decoration: none;
+    }
+    .card{
+        border: none;
     }
     .card-body:hover{
         background: #333;
@@ -59,36 +63,23 @@
         console.log(show.style.display)
     }
 </script>
-<header class="">
-    <nav class="navbar">
-            <h5 class="px-2">Payments</h5>
-        <div class="user-notifications px-4 d-flex align-items-center">
-            <img src="{{user.image.url}}" alt="image" width="30px">
-            <small class="px-3">{{user.username}}</small>
-            <small><i class="bi bi-gear" onclick="settingsShow();"></i></small>
-        </div>
-    </nav>
-</header>
-<div class="settings-show">
-    <a href="settings">settings</a><br>
-    <a href="">Logout</a>
-</div>
+{% include 'base/header.html' %}
             <section class="main-app-area mt-4">
                 <div class="container">
                     <div class="debtor-list">
-                        <div class="title bg-dark text-light py-3 px-2 d-flex justify-content-between align-items-center">
+                        <div class="title bg-secondary text-light py-3 px-2 d-flex justify-content-between align-items-center">
                             <h5>Search Or Select Debtor</h5>
-                            <div class="search px-3 d-flex align-items-center">
+                            <div class="search px-3 d-flex align-items-center bg-light">
                                 <form action="" method="get" class="d-flex align-items-center">
                                     {% csrf_token %}
-                                    <input style="background:#f8f9fa;" type="search" name="q" placeholder="Name/Surname" class="py-2 form-control">
-                                    <button class="btn btn-light" type="submit">
+                                    <input  type="search" name="q" placeholder="Name/Surname" class="bg-light  form-control">
+                                    <button class="btn btn-bg-light" type="submit">
                                         <i class="bi bi-search text-dark"></i>
                                     </button>
                                 </form>
                             </div>
                         </div>
-                            <div class="row">
+                            <div class="row py-3">
                                 <div class="col">
                                     <div class="card">
                                         {% for debtor in debtors %}

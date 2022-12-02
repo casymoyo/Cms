@@ -1,0 +1,99 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    #date{
+        float:right;
+    }
+    .messages{
+
+    }
+    .table thead, tbody{
+        box-shadow:  0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .table td, .table td a{
+        color: #fff;
+    }
+</style>
+<div class="dash">
+    {% include 'base/aside.html' %}
+    <div class="center-panel">
+        {% include 'base/header.html' %}
+        <section class="main-app-area mt-4">
+            <div class="container">
+                {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}
+                                <i class="bi bi-close text-light"></i>
+                            </p>
+                            {% endfor %}
+                        </ul>
+                {% endif %}
+                <div class="heading d-flex justify-content-between align-items-center mb-4 py-2 bg-secondary text-light">
+                    <h4 class="px-2">Debtors</h4>
+                    <div class="button d-flex">
+                        <a href="{% url 'overdues' %}" class="btn btn-secondary px-2">
+                            Overdue Debtors
+                        </a>
+                        {% if request.user.is_superuser %}
+                        <a href="{% url 'cancelledDebtorList' %}" class="btn btn-secondary px-2">
+                            Cancelled debtors
+                            <div class="badge" style="color: #f06721;">{{cancelledCount}}</div>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                    <table class="table table-striped table-responsive table-hover" id="table">
+                        <caption>List of Debtors</caption>
+                        <thead>
+                            <th>Name</th>
+                            <th>Product</th>
+                            <th>Deposit</th>
+                            <th class="">First Payment
+                                <span class="badge btn-light"><a href="" style="text-decoration: none;">Overdue {{overdue_thirty}}</a></span>
+                            </th>
+                            <th class="">Second Payment
+                                <span class="badge btn-light"><a href="" style="text-decoration: none;">Overdue {{overdue_sixty}}</a></span>
+                            </th>
+                            <th class="">Final Payment
+                                <span class="badge btn-light"><a href="" style="text-decoration: none;">Overdue {{overdue_ninety}}</a></span>
+                            </th>
+                            <th>Total</th>
+                        </thead>
+                        <tbody>
+                            {% for debtor in debtors %}
+                            <tr>
+                                <td style="background:#f06621bc;"><a href="" style="text-decoration:none;">{{debtor.name}} {{debtor.surname}}</a></td>
+                                <td style="background:#f06621bc;">{{debtor.product}}</td>
+                                <td style="background:#f06621bc;" class="">${{debtor.product.deposit}}</td>
+
+                                <td class="bg-secondary text-light">
+                                    <span class="payment">${{debtor.product.first_payment}}</span>
+                                    <small id="date">{{debtor.first_payment_date}}</small>
+                                </td>
+
+                                <td class="bg-primary text-light">
+                                    <span class="payment">${{debtor.product.second_payment}}</span> 
+                                    <small id="date">{{debtor.second_payment_date}}</small></td>
+
+                                <td class="bg-success text-light">
+                                    <span class="payment">${{debtor.product.final_payment}} </span> 
+                                    <small id="date">{{debtor.final_payment_date}}</small></td>
+                                <td style="background:#f06621bc;">
+                                    <span id="product_total"> ${{debtor.product.total}}</span>/
+                                    <span id="product_amount"> ${{debtor.product.product_amount}}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            </div>
+        </section>
+</div>
+<script>
+    let product_amount = document.querySelector('#product_amount').innerHTML
+    let product_total = document.querySelector('#product_total').innerHTML
+    console.log(product_amount)
+</script>
+{% endblock content %}

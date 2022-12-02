@@ -23,7 +23,12 @@ class productForm(ModelForm):
     
     class Meta:
         model = Product
-        exclude = ("debtor", "first_payment", "second_payment", "final_payment", "product_id")
+        exclude = ("debtor", "first_payment", "second_payment", "final_payment", "product_id", "total", "is_fully_paid")
+class updateProductForm(ModelForm):
+    
+    class Meta:
+        model = Product
+        exclude = ("debtor", "first_payment", "second_payment", "final_payment", "product_id", "total", "is_fully_paid")
 
 class paymentForm(ModelForm):
     
@@ -35,7 +40,7 @@ class UpdatePaymentForm(ModelForm):
     
     class Meta:
         model = Product
-        exclude = ("debtor", "product", "product_sn","total", "is_fully_paid", "product_amount",)
+        exclude = ("debtor", "product", "product_sn","total", "is_fully_paid", "product_amount", "total","is_fully_paid")
 
 class cancelForm(ModelForm):
     class Meta:

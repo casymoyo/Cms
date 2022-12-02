@@ -2,10 +2,11 @@
 <style>
     .left-panel{
         height: 100vh;
+        background:#f8f9fa;
     }
     .left-panel a{
         text-decoration: none;
-        color: #fff;
+        color: #333;
     }
     .left-panel ul{
         list-style: none;
@@ -16,21 +17,32 @@
     .user-notifications img{
         border-radius: 50%;
     }
+    .heading img{
+        border: none !important;
+    }
+    .heading{
+        border: 1px solid #f8f9fa ;
+    }
+    .dash-logo{
+        height: 56px;
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
 </style>
-<div class="left-panel bg-dark text-light">
-    <div class="dash-logo d-flex align-items-center justify-content-between py-3">
-        <div class="heading">
+<div class="left-panel bg-light text-dark">
+    <div class="dash-logo d-flex align-items-center justify-content-between py-3 bg-light">
+        <div class="px-2">
             <img src="{% static 'assets/tc_logo.png' %}" alt="logo" class="img-fluid" width='30px'>
-            <small>C M S</small>
+            <small class="text-dark">C M S</small>
         </div>
         <div class="drop-menu">
             <i class="bi bi-list px-2"></i>
         </div>
     </div>
-    <div class="left-panel-contents">
+    <div class="left-panel-contents py-3">
         <ul>
             <li>
-                <a href="/dashboard/"><i class="bi bi-speedometer2"></i>
+                <a href="{% url 'dashboard' %}"><i class="bi bi-speedometer2"></i>
                     Dashboard
                 </a>
             </li>
@@ -44,7 +56,7 @@
                     Payments
                 </a>
             </li>
-            {% if request.user.position == 'admin' %}
+            {% if request.user.is_superuser %}
                 <li>
                     <a href="{% url 'userManagement'%}"><i class="bi bi-person-plus"></i>
                         Manage Users

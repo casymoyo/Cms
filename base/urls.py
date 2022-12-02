@@ -34,9 +34,11 @@ urlpatterns = [
 
     # cancel
     path('cancelledDebtors/', views.cancelledDebtorList, name='cancelledDebtorList'),
-    path('cancelDebtor/<int:pk>', views.cancelDebtor, name='cancelDebtor'),
+    path('cancelDebtor/<int:pk>/', views.cancelDebtor, name='cancelDebtor'),
     path('revertCancellation/<int:pk>', views.revertCancellation, name='revertCancellation'),
+    path('deleteDebtor/<int:pk>/', views.deleteDebtor, name='deleteDebtor'),
 
-
+    #user 
+    path('userDebtors/<int:pk>/', views.userDebtors, name ='userDebtors')
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

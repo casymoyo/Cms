@@ -1,17 +1,22 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block content %}
+<style>
+    .card{
+        border: none;
+    }
+</style>
     <div class="dash">
         {% include 'base/aside.html' %}
         <div class="center-panel">
             {% include 'base/header.html' %}
             <section class="main-app-area mt-4">
                 <div class="container">
-                    <div class="heading d-flex justify-content-between align-items-center mb-4">
-                        <h4>Users</h4>
-                        <div class="button">
+                    <div class="user-heading d-flex justify-content-between align-items-center mb-4 bg-secondary text-light">
+                        <h4 class = "px-2 py-2">Users</h4>
+                        <div class="button px-2">
                             <a href="{% url 'createUser'%}">
-                                <div class="btn btn btn-primary">Add user</div>
+                                <div class="btn btn btn-secondary text-light ">Add user</div>
                             </a>
                         </div>
                     </div>
@@ -20,15 +25,18 @@
                             {% for user in users  %}
                             <div class="col">
                                 <div class="card">
-                                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                                        <div class="card-body">
                                             <img src="{{user.image.url}}" class="card-img-top" alt="userImage" style="width: 50px; text-align: center;">
                                             <h5 class="card-title">{{user.username}}</h5>
                                             <!-- <p class="card-text"></p> -->
                                             <div class="buttons">
-                                                <a href="#" class="">
-                                                    View User Activities
+                                                <a href="{% url 'userDebtors' user.id %}" class="btn btn-light">
+                                                    Debtors
                                                 </a>
-                                                <a href="#" class="">
+                                                <a href="{% url 'userActivity' user.id %}" class="btn btn-light">
+                                                    Activity
+                                                </a>
+                                                <a href="#" class="btn btn-light">
                                                     Delete User
                                                 </a>
                                             </div>

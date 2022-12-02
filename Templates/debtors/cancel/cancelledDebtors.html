@@ -11,6 +11,9 @@
     .table td, .table td a{
         color: #fff;
     }
+    .card{
+        border:none;
+    }
 </style>
 <div class="dash">
     {% include 'base/aside.html' %}
@@ -27,8 +30,8 @@
                             {% endfor %}
                         </ul>
                 {% endif %}
-                <div class="heading d-flex justify-content-between align-items-center mb-4">
-                    <h4>
+                <div class="heading d-flex justify-content-between align-items-center mb-4 bg-secondary text-light py-2">
+                    <h4 class="px-2">
                         Cancelled Debtors
                     </h4>
                 </div>
@@ -49,7 +52,7 @@
                                             <td style="background:#f06621bc;">{{cancelledDebtor.user}}</td>
                                             <td class="bg-secondary">
                                                 <a href="{% url 'revertCancellation' cancelledDebtor.id %} " class="btn btn-light btn-sm text-dark">Revert</a>
-                                                <a href="" class="btn btn-danger btn-sm">Confirm Delete</a>
+                                                <a href="{% url 'deleteDebtor' cancelledDebtor.id %}" class="btn btn-danger btn-sm">Confirm Delete</a>
                                             </td>
                                         </tr>
                                     {% endfor %}

@@ -3,7 +3,12 @@
 {% block content %}
 <style>
 .navbar{
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        background: #fff !important;
+        height: 56px;
+    }
+.navbar h5{
+    opacity: 0.8;
 }
 .settings-show{
     display: none;
@@ -38,9 +43,7 @@ label{
 }
 form input{
     border: 1px solid black;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border: none;
     width: 250px;
     opacity: 0.8;
 }
@@ -65,13 +68,13 @@ form label{
             </div>
         </nav>
         <section class="main-app-area mt-4">
+            <div id="error" class="error alert alert-warning" role="alert" style="display:none;"></div>
             <div class="container">
                 <div class="form d-flex justify-content-center py-5 mt-4">
                     <form action="" method="post" class="d-flex justify-content-center flex-column">
-                        <div id="error" role="alert"></div>
                         {% csrf_token %}
                         {{form.as_table}}
-                        <button class="btn btn-primary" type="button" id="btn-1" class="py-2">done</button>
+                        <button class="btn btn-primary" type="button" id="btn-1" class="py-2">Confirm</button>
                         <button class="btn btn-dark" type="submit" id="btn-2">Submit</button>
                         {% if messages %}
                         <ul class="messages">
@@ -95,16 +98,30 @@ form label{
     let btn1 = document.getElementById('btn-1')
     let btn2 = document.getElementById('btn-2')
     
+    let total = (Number(deposit.value) + Number(firstPayment.value) + Number(secondPayment.value) + Number(finalPayment.value))
+    
     btn2.disabled = true;
 
     btn1.addEventListener(
         'click', function (){
-            total = (Number(deposit.value) + Number(firstPayment.value) + Number(secondPayment.value) + Number(finalPayment.value))
             if(total > Number(product_amount)){
                 let difference = Number(product_amount - total)
-                let error = document.querySelector('#error').innerHTML = `Total payments $${total} cant be above total selling amount $${product_amount}`; 
-                error.classList.add('alert alert-warning');
-                console.log(finalPayment.value)
+                let error = document.querySelector('.error')
+                error.style.display="block";
+                error.innerHTML = `Total payments $${total} cant be above total selling amount $${product_amount}`; 
+            }
+            else if(total < Number(product_amount)&(finalPayment.value != 0)
+            ){
+                let difference = Number(product_amount - total)
+                let error = document.querySelector('.error') 
+                error.style.display="block";
+                error.innerHTML = `Total payment $${total} is less total selling amount $${product_amount}`;
+            }
+            else if(total == Number(product_amount)
+            ){
+                let error = document.querySelector('.error') 
+                error.style.display="block";
+                error.innerHTML = `Total payment $${total} cant exceed selling price $${product_amount}`;
             }
             else{
                 btn1.disabled = true;
@@ -113,37 +130,37 @@ form label{
         }
     )
     if(deposit.value == 0){
-            firstPayment.style.display='none';
-            secondPayment.style.display='none';
-            finalPayment.style.display='none';
+            firstPayment.disabled = true;
+            secondPayment.disabled = true;
+            finalPayment.disabled = true;
         }
         else if((deposit.value != 0) & (firstPayment.value == 0)) {
-            deposit.style.display='none';
-            secondPayment.style.display='none';
-            finalPayment.style.display='none';
+            deposit.disabled = true;
+            secondPayment.disabled = true;
+            finalPayment.disabled = true;
         }
         else if((deposit.value != 0) & 
             (firstPayment.value != 0)& 
             (secondPayment.value == 0)) {
 
-            deposit.style.display='none';
-            firstPayment.style.display='none';
-            finalPayment.style.display='none';
+            deposit.disabled = true;
+            firstPayment.disabled = true
+            finalPayment.disabled = true;
         }
         else if((deposit.value != 0) & 
             (firstPayment.value != 0)& 
             (secondPayment.value != 0)&
             (finalPayment.value == 0)) {
 
-            deposit.style.display='none';
-            firstPayment.style.display='none';
-            secondPayment.style.display='none';
+            deposit.disabled = true;
+            firstPayment.disabled = true;
+            secondPayment.disabled = true;
         }else{
             console.log('all payments are met')
-            deposit.style.display='none';
-            firstPayment.style.display='none';
-            secondPayment.style.display='none';
-            finalPayment.style.display='none';
+            deposit.disabled = true;
+            firstPayment.disabled = true;
+            secondPayment.disabled = true;
+            finalPayment.disabled = true;
         }
 
         

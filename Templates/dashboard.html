@@ -2,9 +2,12 @@
 {% load static %}
 {% block content %}
 <style>
-    .card, .heading{
+    .card, .head{
         border: none;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) ;
+    }
+    .recent-activities{
+        height: 30vh;
     }
 </style>
     <div class="dash">
@@ -13,7 +16,7 @@
             {% include 'base/header.html' %}
             <section class="main-app-area mt-4">
                 <div class="container">
-                    <div class="heading d-flex justify-content-between align-items-center mb-4 bg-secondary text-light py-2">
+                    <div class="head d-flex justify-content-between align-items-center mb-4 bg-secondary text-light py-2">
                         <h4 class="px-2">Dashboard</h4>
                         <div class="button">
                             <a href="">
@@ -66,15 +69,27 @@
                         <h6 class="py-3 px-2">Recent Activities</h6>
                     </div>
                     <div class="row">
-                        {% for activity in activities %}
                         <div class="col col-mid-8">
-                            <div class="card bg-primary">
-                                <div class="card-body text-center text-light">
-                                    <p>{{activity.content}} || {{activity.created}} </p> 
-                                </div>
+                            <div class="card bg-light">
+                                <table class="table-responsive table">
+                                    <thead>
+                                        <th></th>
+                                        <th>Date</th>
+                                        <th>Activity</th>
+                                        <th>User</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for activity in activities %}
+                                        <tr>
+                                            <td style="color:green;" ><i class="bi bi-box-arrow-in-up"></i></td>
+                                            <td>{{activity.created}}</td>
+                                            <td>{{activity.content}} For {{activity.title}} </td>
+                                            <td>{{activit.user.id}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
             </section>

@@ -6,10 +6,7 @@
     margin-top: 25px;
 }
 form input{
-    border: 1px solid black;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border:none;
     width: 250px;
     opacity: 0.8;
 }
@@ -19,6 +16,11 @@ form label{
 }
 .navbar{
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    background:#fff;
+    height:56px;
+}
+.navbar h5{
+    opacity:0.8;
 }
 .settings-show{
     display: none;
@@ -64,7 +66,7 @@ form label{
         <section class="main-app-area mt-3">
             <div class="container">
                 <div class="form d-flex justify-content-center">
-                    <form action="" method="post" class="d-flex  flex-column">
+                    <form action="" method="post" class="d-flex  flex-column py-5">
                         {% csrf_token %}
                         {{form.as_table}}
                         <button class="btn btn-dark">Submit</button>
