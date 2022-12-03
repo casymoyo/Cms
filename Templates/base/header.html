@@ -65,7 +65,7 @@
     </nav>
 </header>
 <div class="settings-show">
-    <a href="settings">settings</a><br>
+    <a href="{% url 'userSettings' request.user.id %}">settings</a><br>
     <a href="{% url 'logout' %}">Logout</a>
 </div>
 <div class="notifications">

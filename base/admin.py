@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from . models import Debtor, Work, Product, User
 from typing import Set
 
-admin.site.register(User, UserAdmin)
+admin.site.register(User)
 admin.site.register(Debtor)
 admin.site.register(Work)
 admin.site.register(Product)

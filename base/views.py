@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from . models import User, Debtor, Work, Product
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from . forms import debtorForm, workForm, productForm, paymentForm, UpdatePaymentForm, updateProductForm
+from . forms import debtorForm, workForm, productForm, paymentForm, UpdatePaymentForm, updateProductForm, createUserForm, updateUserForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import permission_required, login_required
 from json import dumps
@@ -420,6 +420,16 @@ def createUser(request):
             # g.user_set.add(u)
     return render(request,'user/createUser.html', {'form':form} )  
 
+def updateUser(request, pk):
+    user = User.objects.get(pk = pk)
+    form = updateUserForm()
+    if request.method == 'POST':
+        form = updateUserForm(request.POST)
+        if form.is_valid:
+            form.save()
+    return render(request, 'user/editProfile.html', {'user':user, 'form':form})
+
+
 def userDebtors(request, pk):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     debtors = Debtor.objects.filter(
@@ -431,8 +441,10 @@ def userDebtors(request, pk):
         Q(product__second_payment__icontains = q)|
         Q(product__final_payment__icontains = q)|
         Q(work__employer__contains = q)
-    )
+    ) & Debtor.objects.filter(user = pk)
     return render(request, 'user/userDebtors.html', {'debtors':debtors})
 
-
+def userSettings(request, pk):
+    user = User.objects.get(pk = pk)
+    return render(request, 'user/settings.html', {'user':user})
 

@@ -3,10 +3,16 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from . models import Debtor, Work, Product, User
 
-# class createUserForm(UserCreationForm):
-#     class Meta:
-#         model = User
-#         fields = ['first_name', 'last_name', 'position', 'username', 'password1']
+class createUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'position', 'username', 'password1']
+
+class updateUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['image']
+        exclude = ['password1']
 class debtorForm(ModelForm):
     
     class Meta:
