@@ -22,6 +22,10 @@
         text-decoration: none;
         color: #333;
     }
+    .settings-show a:hover{
+        background: #f06721;
+        color: #fff;
+    }
     .search{
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         width: 240px;
@@ -67,7 +71,4 @@
 <div class="settings-show">
     <a href="{% url 'userSettings' request.user.id %}">settings</a><br>
     <a href="{% url 'logout' %}">Logout</a>
-</div>
-<div class="notifications">
-    
 </div>

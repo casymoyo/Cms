@@ -1,11 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block content %}
-<style>
-    .heading{
-        box-shadow:  0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-</style>
 <div class="dash">
     {% include 'base/aside.html' %}
     <div class="center-panel">
@@ -33,61 +28,61 @@
                     </div>
                 </div>
                 <div class="container">
-                    <table class="table table-striped table-responsive table-hover">
-                        <caption>First Payment Overdues</caption>
-                        <thead>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>Product</th>
-                        </thead>
-                        <tbody>
-                            {% for overdue in overdue_thirty %}
-                            <tr>
-                                <td><a href="{% url 'debtor' overdue.id %}" style="text-decoration:none;">{{overdue.name}}</a></td>
-                                <td>{{overdue.surname}}</td>
-                                <td>{{overdue.product}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                    <h6>Second Payment</h6>
-                    <table class="table table-striped table-responsive table-hover">
-                        <caption>Second Payment Overdues</caption>
-                        <thead>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>Product</th>
-                        </thead>
-                        <tbody>
-                            {% for overdue in overdue_sixty %}
-                            <tr>
-                                <td><a href="{% url 'debtor' overdue.id %}" style="text-decoration:none;">{{overdue.name}}</a></td>
-                                <td>{{overdue.surname}}</td>
-                                <td>{{overdue.product}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                    <h6>Final Payment</h6>
-                    <table class="table table-striped table-responsive table-hover">
-                        <caption>Final Payment Overdues</caption>
-                        <thead>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>Product</th>
-                        </thead>
-                        <tbody>
-                            {% for overdue in overdue_ninety %}
-                            <tr>
-                                <td><a href="{% url 'debtor' overdue.id %}" style="text-decoration:none;">{{overdue.name}}</a></td>
-                                <td>{{overdue.surname}}</td>
-                                <td>{{overdue.product}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div style="height:70vh;overflow:auto;">
+                        <table class="table table-striped table-responsive table-hover">
+                            <caption>First Payment Overdues</caption>
+                            <thead>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Product</th>
+                            </thead>
+                            <tbody>
+                                {% for overdue in overdue_thirty %}
+                                <tr>
+                                    <td><a href="{% url 'debtor' overdue.id %}" style="text-decoration:none;">{{overdue.name}}</a></td>
+                                    <td>{{overdue.surname}}</td>
+                                    <td>{{overdue.product}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <h6>Second Payment</h6>
+                        <table class="table table-striped table-responsive table-hover">
+                            <caption>Second Payment Overdues</caption>
+                            <thead>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Product</th>
+                            </thead>
+                            <tbody>
+                                {% for overdue in overdue_sixty %}
+                                <tr>
+                                    <td><a href="{% url 'debtor' overdue.id %}" style="text-decoration:none;">{{overdue.name}}</a></td>
+                                    <td>{{overdue.surname}}</td>
+                                    <td>{{overdue.product}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <h6>Final Payment</h6>
+                        <table class="table table-striped table-responsive table-hover">
+                            <caption>Final Payment Overdues</caption>
+                            <thead>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Product</th>
+                            </thead>
+                            <tbody>
+                                {% for overdue in overdue_ninety %}
+                                <tr>
+                                    <td><a href="{% url 'debtor' overdue.id %}" style="text-decoration:none;">{{overdue.name}}</a></td>
+                                    <td>{{overdue.surname}}</td>
+                                    <td>{{overdue.product}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>

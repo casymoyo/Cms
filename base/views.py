@@ -37,10 +37,14 @@ def logoutpage(request):
 
 @login_required(login_url = 'login')
 def dashboard(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    print(q)
+    notis = Notifications.objects.filter(Q(created__icontains = q))
     debtors = Debtor.objects.all()
-    notis = Notifications.objects.all()
+    fully_paid = Debtor.objects.filter(product__is_fully_paid = 'yes').count()
     total_sp = Debtor.objects.aggregate(Sum('product__product_amount'))
     total_dp = Debtor.objects.aggregate(Sum('product__deposit'))
+    overdues_count = Debtor()
     overdues = Debtor()
     total_amount = Debtor()
     all_total_amounts = 0
@@ -56,7 +60,9 @@ def dashboard(request):
         'debtors': debtors.count(),
         'total': all_total_amounts + total_dp['product__deposit__sum'] ,
         'activities': notis,
-        'total_sp': total_sp['product__product_amount__sum']
+        'total_sp': total_sp['product__product_amount__sum'],
+        'fully_paid': fully_paid,
+        'overdues_count': overdues_count.due_in_thirty.count() + overdues_count.due_in_sixty.count() + overdues_count.due_in_ninety.count() 
     }
     return render(request, 'dashboard.html', context)
 
@@ -73,8 +79,6 @@ def debtors(request):
         Q(product__final_payment__icontains = q)|
         Q(work__employer__contains = q) 
     ) &  Debtor.objects.filter(user = request.user.id) & Debtor.objects.filter(status = '') 
-    # p = Product.objects.get(pk = 2)
-    # print(p)
     overdues = Debtor()
     
     context = {
@@ -341,7 +345,8 @@ def updatePayment(request, pk):
     context = {
         'form':form,
         'name': product.debtor.name,
-        'data': dataJSON
+        'data': dataJSON,
+        'product': product
     }
     return render(request, 'debtors/createPayment.html', context)
 
