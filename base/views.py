@@ -25,7 +25,11 @@ def loginpage(request):
         if user is not None:    
             request.session['username'] = username
             login(request, user)
-            return redirect('dashboard')
+            
+            if request.user.position == 'admin':
+                return redirect('adminDashboard')
+            else:
+                return redirect('dashboard')
         else:
             messages.add_message(request, messages.WARNING, 'login failed')
             return redirect('login')
@@ -37,17 +41,62 @@ def logoutpage(request):
 
 @login_required(login_url = 'login')
 def dashboard(request):
+    if request.user.position != 'admin':
+        q = request.GET.get('q') if request.GET.get('q') != None else ''
+        notis = Notifications.objects.filter(Q(created__icontains = q))
+        debtors = Debtor.objects.filter(user = request.user.id)
+        fully_paid = Debtor.objects.filter(is_fully_paid = 'yes') & Debtor.objects.filter(user  = request.user.id)
+        
+        total_sp = debtors.aggregate(Sum('product__product_amount'))
+        
+        total_dp = debtors.aggregate(Sum('product__deposit'))
+
+        print(total_dp['product__deposit__sum'])
+        print(total_sp)
+        print(debtors)
+        overdues_count = Debtor()
+        overdues = Debtor()
+        total_amount = Debtor()
+        all_total_amounts = 0
+        totals = 0
+        
+        for debtor_amounts in total_amount.total:
+            for amounts in debtor_amounts.values():
+                try:
+                    all_total_amounts = amounts + all_total_amounts
+                except:
+                    pass
+        print(total_amount.total)
+        try:
+            totals = all_total_amounts + total_dp['product__deposit__sum'] 
+        except:
+            pass
+
+        context = {
+            'debtors': debtors.count(),
+            'total':totals ,
+            'activities': notis,
+            'total_sp': total_sp['product__product_amount__sum'],
+            'fully_paid': fully_paid.count(),
+            'overdues_count': overdues_count.due_in_thirty.count() + overdues_count.due_in_sixty.count() + overdues_count.due_in_ninety.count() 
+        }
+        return render(request, 'dashboard.html', context)
+    else:
+        return redirect('adminDashboard')
+
+@login_required(login_url = 'login')
+def adminDashboard(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
-    print(q)
     notis = Notifications.objects.filter(Q(created__icontains = q))
     debtors = Debtor.objects.all()
-    fully_paid = Debtor.objects.filter(product__is_fully_paid = 'yes').count()
+    fully_paid = Debtor.objects.filter(is_fully_paid = 'yes').count()
     total_sp = Debtor.objects.aggregate(Sum('product__product_amount'))
     total_dp = Debtor.objects.aggregate(Sum('product__deposit'))
     overdues_count = Debtor()
     overdues = Debtor()
     total_amount = Debtor()
     all_total_amounts = 0
+    totals = 0
     
     for debtor_amounts in total_amount.total:
         for amounts in debtor_amounts.values():
@@ -55,41 +104,68 @@ def dashboard(request):
                 all_total_amounts = amounts + all_total_amounts
             except:
                 pass
-
+    
+    try:
+        totals = all_total_amounts + total_dp['product__deposit__sum'] 
+    except:
+        pass
     context = {
         'debtors': debtors.count(),
-        'total': all_total_amounts + total_dp['product__deposit__sum'] ,
+        'total':totals ,
         'activities': notis,
         'total_sp': total_sp['product__product_amount__sum'],
         'fully_paid': fully_paid,
         'overdues_count': overdues_count.due_in_thirty.count() + overdues_count.due_in_sixty.count() + overdues_count.due_in_ninety.count() 
     }
     return render(request, 'dashboard.html', context)
-
 @login_required(login_url = 'login')
 def debtors(request):
-    canclledCount = Debtor.objects.filter(status = 'cancelled').count()
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
-    debtors = Debtor.objects.filter(
-        Q(name__icontains =  q)|
-        Q(created__icontains =  q)|
-        Q(product__deposit__icontains =  q)|
-        Q(product__first_payment__icontains = q)|
-        Q(product__second_payment__icontains = q)|
-        Q(product__final_payment__icontains = q)|
-        Q(work__employer__contains = q) 
-    ) &  Debtor.objects.filter(user = request.user.id) & Debtor.objects.filter(status = '') 
-    overdues = Debtor()
-    
-    context = {
-        'debtors': debtors,
-        'overdue_thirty':overdues.due_in_thirty.count(),
-        'overdue_sixty':overdues.due_in_sixty.count(),
-        'overdue_ninety':overdues.due_in_ninety.count(),
-        'cancelledCount':canclledCount,
-    }
-    print((context))
-    return render(request, 'debtors/debtors.html', context)
+        canclledCount = Debtor.objects.filter(status = 'cancelled').count()
+        if request.user.position != 'admin':
+            q = request.GET.get('q') if request.GET.get('q') != None else ''
+            debtors = Debtor.objects.filter(
+                Q(name__icontains =  q)|
+                Q(created__icontains =  q)|
+                Q(product__deposit__icontains =  q)|
+                Q(product__first_payment__icontains = q)|
+                Q(product__second_payment__icontains = q)|
+                Q(product__final_payment__icontains = q)|
+                Q(work__employer__contains = q) 
+            ) &  Debtor.objects.filter(user = request.user.id) & Debtor.objects.filter(status = '') & Debtor.objects.filter(is_fully_paid = 'no')
+            overdues = Debtor()
+            
+            context = {
+                'debtors': debtors,
+                'overdue_thirty':overdues.due_in_thirty.count(),
+                'overdue_sixty':overdues.due_in_sixty.count(),
+                'overdue_ninety':overdues.due_in_ninety.count(),
+                'cancelledCount':canclledCount,
+            }
+            print((context))
+            return render(request, 'debtors/debtors.html', context)
+        else:
+            q = request.GET.get('q') if request.GET.get('q') != None else ''
+            debtors = Debtor.objects.filter(
+                Q(name__icontains =  q)|
+                Q(created__icontains =  q)|
+                Q(product__deposit__icontains =  q)|
+                Q(product__first_payment__icontains = q)|
+                Q(product__second_payment__icontains = q)|
+                Q(product__final_payment__icontains = q)|
+                Q(work__employer__contains = q) 
+            ) &  Debtor.objects.all() & Debtor.objects.filter(status = '') & Debtor.objects.filter(is_fully_paid = 'no')
+            overdues = Debtor()
+            
+            context = {
+                'debtors': debtors,
+                'overdue_thirty':overdues.due_in_thirty.count(),
+                'overdue_sixty':overdues.due_in_sixty.count(),
+                'overdue_ninety':overdues.due_in_ninety.count(),
+                'cancelledCount':canclledCount,
+            }
+            print((context))
+            return render(request, 'debtors/debtors.html', context)
+
 
 @login_required(login_url = 'login')
 def debtor(request, pk):
@@ -183,6 +259,11 @@ def deleteDebtor(request, pk):
         pass
     return redirect('cancelledDebtorList')
 
+@login_required(login_url = 'login')
+def fullyPaidDebtors(request):
+    debtors = Debtor.objects.filter(is_fully_paid = 'yes')
+    return render(request, 'debtors/fullyPaidDebtors.html', {'debtors':debtors})
+
 # debtor work details
 @login_required(login_url = 'login')
 def createWork(request, pk):
@@ -194,7 +275,6 @@ def createWork(request, pk):
         if form.is_valid():
             work_obj = form.save(commit = False)
             work_obj.work_id = deb.id
-            print(work_obj.work_id)
             work_obj.debtor_id = deb.id
             # creating a nofication
             notis, created = Notifications.objects.get_or_create(
@@ -253,6 +333,7 @@ def createProduct(request, pk):
         if form.is_valid():
             product_obj = form.save(commit = False)
             product_obj.product_id = deb.id
+            print(deb.id)
             product_obj.debtor_id = deb.id
             product_obj.total = request.POST['deposit']
             # creating notification
@@ -315,7 +396,7 @@ def payment(request):
 def updatePayment(request, pk):
     amount ={}
     product = Product.objects.get(pk = pk)
-    
+    debtor = Debtor.objects.get(pk = pk)
     amount['product_amount'] = str(product.product_amount)
     dataJSON = dumps(amount)
 
@@ -325,11 +406,11 @@ def updatePayment(request, pk):
         payment_obj = form.save(commit = False)
         payment_obj.total = product.deposit + product.first_payment + product.second_payment + product.final_payment
         if product.deposit + payment_obj.first_payment == product.product_amount:
-            payment_obj.is_fully_paid = 'yes'
+            debtor.is_fully_paid = 'yes'
         elif product.deposit + product.first_payment + payment_obj.second_payment == product.product_amount:
-            payment_obj.is_fully_paid = 'yes'
+            debtor.is_fully_paid = 'yes'
         elif product.deposit + product.first_payment + product.second_payment + payment_obj.final_payment == product.product_amount:
-            payment_obj.is_fully_paid = 'yes'
+            debtor.is_fully_paid = 'yes'
         # creating notification
         notis, created = Notifications.objects.get_or_create(
             user = request.user,
@@ -410,13 +491,12 @@ def createUser(request):
     form = createUserForm()
     if request.method == 'POST':
         form = createUserForm(request.POST)
-        print(request.POST)
+        
         if form.is_valid:
-            # user_obj = form.save(commit = False)
-            # if user_obj.position == 'sales':
-            #     g = Group.objects.get(name='Sales') 
-            #     g.user_set.add(user_obj)
-            form.save()
+            user = form.save(commit = False)
+            user.is_staff = True
+            user.save()
+            return redirect('userManagement')
 
         # g = Group.objects.get(name='sales')
         # users = User.objects.all()
@@ -452,4 +532,29 @@ def userDebtors(request, pk):
 def userSettings(request, pk):
     user = User.objects.get(pk = pk)
     return render(request, 'user/settings.html', {'user':user})
+
+def userPermissions(request, pk):
+    user = User.objects.get(pk = pk)
+
+    if user.position == 'sales':
+        g = Group.objects.get(name='Sales')
+        g.user_set.add(user)
+        messages.add_message(request, messages.SUCCESS, f'{user.username} {g.name} permissions successfully added')
+
+    elif user.position == 'admin':
+        g = Group.objects.get(name='Admin')
+        g.user_set.add(user)
+        messages.add_message(request, messages.SUCCESS, f'{user.username} {g.name} permissions successfully added')
+    
+    elif user.position == 'accountant':
+        g = Group.objects.get(name='Accounts')
+        g.user_set.add(user)
+        messages.add_message(request, messages.SUCCESS, f'{user.username} {g.name} permissions successfully added')
+    
+    elif user.position == 'team leader':
+        g = Group.objects.get(name='Team Leader')
+        g.user_set.add(user)
+        messages.add_message(request, messages.SUCCESS, f'{user.username} {g.name} permissions successfully added')
+
+    return redirect('userManagement')
 

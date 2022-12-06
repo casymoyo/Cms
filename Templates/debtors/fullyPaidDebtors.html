@@ -31,14 +31,10 @@
                         </ul>
                 {% endif %}
                 <div class="heading d-flex justify-content-between align-items-center mb-4 py-2 bg-secondary text-light">
-                    <h4 class="px-2">Debtors
-                        <a href="{% url 'createDebtor' %}">
-                            <i class="bi bi-plus-lg  px-3" style="color:darkgreen;"></i>
-                        </a>
-                    </h4>
-                    <div class="button d-flex">
+                    <h4 class="px-2">Fully Paid Debtors</h4>
+                    {% comment %} <div class="button d-flex">
                         <a href="{% url 'overdues' %}" class="btn btn-secondary px-2">
-                            Overdues
+                            Overdue Debtors
                         </a>
                         {% if request.user.is_superuser %}
                         <a href="{% url 'cancelledDebtorList' %}" class="btn btn-secondary px-2">
@@ -46,24 +42,18 @@
                             <div class="badge" style="color: #f06721;">{{cancelledCount}}</div>
                         </a>
                         {% endif %}
-                    </div>
+                    </div> {% endcomment %}
                 </div>
                 <div style="height:70vh;overflow:auto;">
                     <table class="table table-striped table-responsive table-hover" id="table">
-                        <caption>List of Debtors</caption>
+                        <caption>List of Fully Paid Debtors</caption>
                         <thead>
                             <th>Name</th>
                             <th>Product</th>
                             <th>Deposit</th>
-                            <th class="">First Payment
-                                <span class="badge btn-light"><a href="{% url 'firstOverdues' %}" style="text-decoration: none;">Overdue {{overdue_thirty}}</a></span>
-                            </th>
-                            <th class="">Second Payment
-                                <span class="badge btn-light"><a href="{% url 'secondOverdues' %}" style="text-decoration: none;">Overdue {{overdue_sixty}}</a></span>
-                            </th>
-                            <th class="">Final Payment
-                                <span class="badge btn-light"><a href="{% url 'finalOverdues' %}" style="text-decoration: none;">Overdue {{overdue_ninety}}</a></span>
-                            </th>
+                            <th class="">First Payment</th>
+                            <th class="">Second Payment</th>
+                            <th class="">Final Payment</th>
                             <th>Total</th>
                         </thead>
                         <tbody>

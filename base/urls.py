@@ -5,6 +5,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 urlpatterns = [
     path('', views.loginpage, name='login'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('adminDashboard/', views.adminDashboard, name='adminDashboard'),
     path('logout/', views.logoutpage, name='logout'),
 
     #users
@@ -15,6 +16,7 @@ urlpatterns = [
     path("debtors", views.debtors, name="debtors"),
     path('debtor/<int:pk>/', views.debtor, name = 'debtor'),
     path('payment', views.payment, name = 'payment'),
+    path('fullyPaidDebtors', views.fullyPaidDebtors, name = 'fullyPaidDebtors'),
 
     # create
     path('createDebtor', views.createDebtor, name = 'createDebtor'),
@@ -41,6 +43,7 @@ urlpatterns = [
     #user 
     path('userDebtors/<int:pk>/', views.userDebtors, name ='userDebtors'),
     path('userSettings/<int:pk>/', views.userSettings, name ='userSettings'),
-    path('updateUser/<int:pk>/', views.updateUser, name ='updateUser')
+    path('updateUser/<int:pk>/', views.updateUser, name ='updateUser'),
+    path('userPermissions/<int:pk>/', views.userPermissions, name ='userPermissions')
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

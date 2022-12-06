@@ -6,6 +6,9 @@ urlpatterns = [
     # apis
     path('debtors', views.DebtorstList.as_view()),
     path('debtorApi/<int:pk>/', views.DebtorDetail.as_view()),
+    
+    path('products', views.ProductstList.as_view()),
+    path('productApi/<int:pk>/', views.ProductDetail.as_view()),
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

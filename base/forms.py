@@ -17,7 +17,7 @@ class debtorForm(ModelForm):
     
     class Meta:
         model = Debtor
-        exclude = ("status", "user", "first_payment_date", "second_payment_date", "final_payment_date")
+        exclude = ("status", "user", "first_payment_date", "second_payment_date", "final_payment_date", 'is_fully_paid')
 
 class workForm(ModelForm):
     

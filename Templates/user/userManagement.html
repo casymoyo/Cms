@@ -21,6 +21,15 @@
                         </div>
                     </div>
                     <div class="cards mt-3">
+                        {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}
+                                    <i class="bi bi-close text-light"></i>
+                                </p>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
                         <div class="row">
                             {% for user in users  %}
                             <div class="col">
@@ -39,6 +48,9 @@
                                                 <a href="#" class="btn btn-light">
                                                     Delete User
                                                 </a>
+                                                <a href="{% url 'userPermissions' user.id%}" class="btn btn-light">
+                                                    Add Permissions
+                                                </a>
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -48,15 +60,6 @@
                     </div>
                 </div>
             </section>
-            {% comment %} <section class="recent-activities mt-4">
-                <div class="container">
-                    <div class="heading">
-                        <h6>Recent Activities</h6>
-                    </div>
-                </div>
-            </section> {% endcomment %}
-        </div>
-        
+        </div> 
     </div>
-    
 {% endblock content %}

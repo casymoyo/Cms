@@ -40,7 +40,7 @@
                                         <h5>Work Details</h5>
                                         <div class="buttons">
                                             <a href="{% url 'updateWork' debtor.id %}"><button class="btn btn-light">Update Details</button></a>
-                                            <a href="{% url 'createWork' debtor.id %}"><button class="btn btn-light">Add Details</button></a>
+                                            {% comment %} <a href="{% url 'createWork' debtor.id %}"><button class="btn btn-light">Add Details</button></a> {% endcomment %}
                                         </div>
                                     </div>
                                     <div class="details-group">

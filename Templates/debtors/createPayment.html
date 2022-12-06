@@ -101,7 +101,9 @@ form label{
     let product_amount = data['product_amount'];
     let btn1 = document.getElementById('btn-1')
     let btn2 = document.getElementById('btn-2')
+    let error = document.querySelector('.error')
     
+    let form = document.getElementsByTagName('form').setAttribute('novalidate', true)
     let total = (Number(deposit.value) + Number(firstPayment.value) + Number(secondPayment.value) + Number(finalPayment.value))
     
     btn2.disabled = true;
@@ -110,9 +112,9 @@ form label{
         'click', function (){
             if(total > Number(product_amount)){
                 let difference = Number(product_amount - total)
-                let error = document.querySelector('.error')
                 error.style.display="block";
                 error.innerHTML = `Total payments $${total} cant be above total selling amount $${product_amount}`; 
+            
             }
             else if(total < Number(product_amount)&(finalPayment.value != 0)
             ){
@@ -133,6 +135,7 @@ form label{
             }
         }
     )
+   
     if(deposit.value == 0){
             firstPayment.disabled = true;
             secondPayment.disabled = true;
@@ -166,7 +169,5 @@ form label{
             secondPayment.disabled = true;
             finalPayment.disabled = true;
         }
-
-        
 </script>
 {% endblock content %}
