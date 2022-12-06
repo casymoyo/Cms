@@ -1,0 +1,45 @@
+.dash .left-panel {
+    width:30%;
+}
+.dash .center-panel{
+    width:199%;
+}
+.navbar{
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    background: #fff !important;
+}
+.settings-show{
+    display: none;
+    position: absolute;
+    right: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    width: 8%;
+    height: 8%;
+    text-align: center;
+    background: #fefefefe;
+}
+.navbar i{
+    cursor: pointer;
+}
+.settings-show a{
+    padding: 5px;
+    text-decoration: none;
+    color: #333;
+}
+.settings-show a:hover{
+    background: #f06721;
+    color: #fff;
+}
+.search{
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    width: 240px;
+}
+.search input{
+    border: none;
+}
+.dash{
+    /* {% comment %} display: grid;
+    grid-template-columns: 0.5fr 3fr; {% endcomment %} */
+    display:flex;
+    flex-direction: row;
+}

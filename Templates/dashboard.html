@@ -9,10 +9,23 @@
     .recent-activities{
         height: 30vh;
     }
+    .cards .col{
+        width:33.3%;
+        height: 33.3%;
+    }
+    @media only screen and (max-width: 450px) {
+        .cards .col .card .card-body{
+            display: flex;
+            flex-direction: row;
+        }
+  }
 </style>
     <div class="dash">
         {% include 'base/aside.html' %}
         <div class="center-panel">
+            <div class="aside-responsive">
+                {% include 'base/asideResponsive.html' %}
+            </div>
             {% include 'base/header.html' %}
             <section class="main-app-area mt-4">
                 <div class="container">
@@ -65,8 +78,17 @@
             </section>
             <section class="recent-activities mt-4">
                 <div class="container">
-                    <div class="heading">
+                    <div class="heading d-flex justify-content-between">
                         <h6 class="py-3 px-2">Recent Activities</h6>
+                        <div class="container d-lg-none d-xl-none search d-flex align-items-center justify-content-center">
+                            <form action="" method="get" class="d-flex">
+                                {% csrf_token %}
+                                <input type="search" value="" name="q" placeholder="Search" class="py-2 px-2">
+                                <button style="background:#fff !important ;" class="btn  btn-sm" type="submit">
+                                    <i class="bi bi-search text-dark"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                     <div class="row" style="height:40vh;overflow:auto;">
                         <div class="col col-mid-8">
