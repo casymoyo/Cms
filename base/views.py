@@ -170,7 +170,7 @@ def debtors(request):
 def debtor(request, pk):
     try:
         deb = Debtor.objects.get(pk=pk)
-    except Debtor.DoesNotExist:
+    except:
         return render(request, '404.html')
     context = {
         'debtor': deb
@@ -221,7 +221,7 @@ def cancelledDebtorList(request):
 def cancelDebtor(request, pk):
     try:
         debtor = Debtor.objects.get(pk=pk)
-    except debtor.DoesNotExist:
+    except:
         return render(request, '404.html')
 
     if debtor.status != 'cancelled':
@@ -245,7 +245,7 @@ def cancelDebtor(request, pk):
 def revertCancellation(request, pk):
     try:
         debtor = Debtor.objects.get(pk=pk)
-    except debtor.DoesNotExist:
+    except:
         return render(request, '404.html')
 
     if debtor.status == 'cancelled':
@@ -276,7 +276,7 @@ def fullyPaidDebtors(request):
 def createWork(request, pk):
     try:
         deb = Debtor.objects.get(pk = pk)
-    except debDoesNotExist:
+    except:
         return render(request, '404.html')
 
     form = workForm()
@@ -310,7 +310,7 @@ def createWork(request, pk):
 def updateWork(request, pk):
     try:
         work = Work.objects.get(id = pk)
-    except workDoesNotExist:
+    except:
         return render(request, '404.html')
 
     form = workForm(request.POST or None, instance = work)
@@ -338,7 +338,7 @@ def updateWork(request, pk):
 def createProduct(request, pk):
     try:
         deb = Debtor.objects.get(pk = pk)
-    except deb.DoesNotExist:
+    except:
         return render(request, '404.html')
 
     form = productForm()
@@ -373,7 +373,7 @@ def createProduct(request, pk):
 def updateProduct(request, pk):
     try:
         product = Product.objects.get(pk = pk)
-    except productDoesNotExist:
+    except:
         return render(request, '404.html')
 
     form = updateProductForm(request.POST or None, instance = product)
@@ -415,7 +415,7 @@ def updatePayment(request, pk):
     try:
         product = Product.objects.get(pk = pk)
         debtor = Debtor.objects.get(pk = pk)
-    except DoesNotExist:
+    except :
         return render(request, '404.html')
 
     amount['product_amount'] = str(product.product_amount)
@@ -551,7 +551,7 @@ def userDebtors(request, pk):
 def userSettings(request, pk):
     try:
         user = User.objects.get(pk = pk)
-    except userDoesNotExist:
+    except:
         return render(request, '404.html')
 
     return render(request, 'user/settings.html', {'user':user})
@@ -559,7 +559,7 @@ def userSettings(request, pk):
 def userPermissions(request, pk):
     try:
         user = User.objects.get(pk = pk)
-    except userDoesNotExist:
+    except:
         return render(request, '404.html')
 
     if user.position == 'sales':
