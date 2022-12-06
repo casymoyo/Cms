@@ -62,10 +62,14 @@ form label{
                 <small><i class="bi bi-gear" onclick="settingsShow();"></i></small>
             </div>
         </nav>
+        <div class="settings-show">
+            <a href="{% url 'userSettings' request.user.id %}">settings</a><br>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
         <section class="main-app-area mt-3">
             <div class="container">
                 <div class="form d-flex justify-content-center">
-                    <form action="" method="post" class="d-flex  flex-column">
+                    <form action="" method="post" class="d-flex  flex-column py-5">
                         {% csrf_token %}
                         {{form.as_table}}
                         <button class="btn btn-dark">Submit</button>

@@ -66,7 +66,6 @@ def dashboard(request):
                     all_total_amounts = amounts + all_total_amounts
                 except:
                     pass
-        print(total_amount.total)
         try:
             totals = all_total_amounts + total_dp['product__deposit__sum'] 
         except:
@@ -118,6 +117,7 @@ def adminDashboard(request):
         'overdues_count': overdues_count.due_in_thirty.count() + overdues_count.due_in_sixty.count() + overdues_count.due_in_ninety.count() 
     }
     return render(request, 'dashboard.html', context)
+
 @login_required(login_url = 'login')
 def debtors(request):
         canclledCount = Debtor.objects.filter(status = 'cancelled').count()
@@ -141,7 +141,6 @@ def debtors(request):
                 'overdue_ninety':overdues.due_in_ninety.count(),
                 'cancelledCount':canclledCount,
             }
-            print((context))
             return render(request, 'debtors/debtors.html', context)
         else:
             q = request.GET.get('q') if request.GET.get('q') != None else ''
@@ -172,7 +171,7 @@ def debtor(request, pk):
     try:
         deb = Debtor.objects.get(pk=pk)
     except Debtor.DoesNotExist:
-        return HttpResponse(status=404)
+        return render(request, '404.html')
     context = {
         'debtor': deb
     }
@@ -220,7 +219,11 @@ def cancelledDebtorList(request):
 
 @login_required(login_url = 'login')
 def cancelDebtor(request, pk):
-    debtor = Debtor.objects.get(pk=pk)
+    try:
+        debtor = Debtor.objects.get(pk=pk)
+    except debtor.DoesNotExist:
+        return render(request, '404.html')
+
     if debtor.status != 'cancelled':
         debtor.status = 'cancelled'
         # creating a nofication
@@ -240,7 +243,11 @@ def cancelDebtor(request, pk):
 
 @login_required(login_url = 'login')
 def revertCancellation(request, pk):
-    debtor = Debtor.objects.get(pk=pk)
+    try:
+        debtor = Debtor.objects.get(pk=pk)
+    except debtor.DoesNotExist:
+        return render(request, '404.html')
+
     if debtor.status == 'cancelled':
         debtor.status = ''
         debtor.save()
@@ -256,7 +263,7 @@ def deleteDebtor(request, pk):
         debtor = Debtor.objects.get(pk = pk)
         debtor.delete()
     except:
-        pass
+        return render(request, '404.html')
     return redirect('cancelledDebtorList')
 
 @login_required(login_url = 'login')
@@ -267,7 +274,11 @@ def fullyPaidDebtors(request):
 # debtor work details
 @login_required(login_url = 'login')
 def createWork(request, pk):
-    deb = Debtor.objects.get(pk = pk)
+    try:
+        deb = Debtor.objects.get(pk = pk)
+    except debDoesNotExist:
+        return render(request, '404.html')
+
     form = workForm()
 
     if request.method == 'POST':
@@ -297,7 +308,10 @@ def createWork(request, pk):
 
 @login_required(login_url = 'login')
 def updateWork(request, pk):
-    work = Work.objects.get(id = pk)
+    try:
+        work = Work.objects.get(id = pk)
+    except workDoesNotExist:
+        return render(request, '404.html')
 
     form = workForm(request.POST or None, instance = work)
 
@@ -325,7 +339,7 @@ def createProduct(request, pk):
     try:
         deb = Debtor.objects.get(pk = pk)
     except deb.DoesNotExist:
-        return HttpResponse(status=404)
+        return render(request, '404.html')
 
     form = productForm()
     if request.method == 'POST':
@@ -357,7 +371,10 @@ def createProduct(request, pk):
 
 @login_required(login_url = 'login')
 def updateProduct(request, pk):
-    product = Product.objects.get(pk = pk)
+    try:
+        product = Product.objects.get(pk = pk)
+    except productDoesNotExist:
+        return render(request, '404.html')
 
     form = updateProductForm(request.POST or None, instance = product)
 
@@ -395,8 +412,12 @@ def payment(request):
 @login_required(login_url = 'login')
 def updatePayment(request, pk):
     amount ={}
-    product = Product.objects.get(pk = pk)
-    debtor = Debtor.objects.get(pk = pk)
+    try:
+        product = Product.objects.get(pk = pk)
+        debtor = Debtor.objects.get(pk = pk)
+    except DoesNotExist:
+        return render(request, '404.html')
+
     amount['product_amount'] = str(product.product_amount)
     dataJSON = dumps(amount)
 
@@ -407,10 +428,13 @@ def updatePayment(request, pk):
         payment_obj.total = product.deposit + product.first_payment + product.second_payment + product.final_payment
         if product.deposit + payment_obj.first_payment == product.product_amount:
             debtor.is_fully_paid = 'yes'
+            debtor.save()
         elif product.deposit + product.first_payment + payment_obj.second_payment == product.product_amount:
             debtor.is_fully_paid = 'yes'
+            debtor.save()
         elif product.deposit + product.first_payment + product.second_payment + payment_obj.final_payment == product.product_amount:
             debtor.is_fully_paid = 'yes'
+            debtor.save()
         # creating notification
         notis, created = Notifications.objects.get_or_create(
             user = request.user,
@@ -427,7 +451,8 @@ def updatePayment(request, pk):
         'form':form,
         'name': product.debtor.name,
         'data': dataJSON,
-        'product': product
+        'product': product,
+
     }
     return render(request, 'debtors/createPayment.html', context)
 
@@ -497,12 +522,6 @@ def createUser(request):
             user.is_staff = True
             user.save()
             return redirect('userManagement')
-
-        # g = Group.objects.get(name='sales')
-        # users = User.objects.all()
-        # for u in users:
-        #     print(u)
-            # g.user_set.add(u)
     return render(request,'user/createUser.html', {'form':form} )  
 
 def updateUser(request, pk):
@@ -530,11 +549,18 @@ def userDebtors(request, pk):
     return render(request, 'user/userDebtors.html', {'debtors':debtors})
 
 def userSettings(request, pk):
-    user = User.objects.get(pk = pk)
+    try:
+        user = User.objects.get(pk = pk)
+    except userDoesNotExist:
+        return render(request, '404.html')
+
     return render(request, 'user/settings.html', {'user':user})
 
 def userPermissions(request, pk):
-    user = User.objects.get(pk = pk)
+    try:
+        user = User.objects.get(pk = pk)
+    except userDoesNotExist:
+        return render(request, '404.html')
 
     if user.position == 'sales':
         g = Group.objects.get(name='Sales')

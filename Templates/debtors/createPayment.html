@@ -67,11 +67,15 @@ form label{
                 <small><i class="bi bi-gear" onclick="settingsShow();"></i></small>
             </div>
         </nav>
+        <div class="settings-show">
+            <a href="{% url 'userSettings' request.user.id %}">settings</a><br>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
         <section class="main-app-area mt-4">
             <div id="error" class="error alert alert-warning" role="alert" style="display:none;"></div>
             <div class="container">
                 <div class="form d-flex justify-content-center py-5 mt-4">
-                    {% if product.is_fully_paid == 'yes' %} 
+                    {% if product.debtor.is_fully_paid == 'yes' %} 
                         <h3>Account is Fully paid</h3>
                     {% else %}
                     <form action="" method="post" class="d-flex justify-content-center flex-column">

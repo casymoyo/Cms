@@ -30,6 +30,7 @@ class Debtor(models.Model):
     gender = models.CharField(max_length=50, choices = gender)
     address = models.CharField(max_length=50)
     phonenumber = models.CharField(max_length=10)
+    id_number = models.CharField(max_length=14)
     status = models.CharField(max_length=50, default = '', blank = True )
     created = models.DateField(auto_now_add=True)
     is_fully_paid = models.CharField(max_length=50, default = 'no', null=True, blank = True)
@@ -82,22 +83,13 @@ class Product(models.Model):
     product_sn = models.CharField(max_length=50)
     product_amount = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
     deposit = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
+    product_details = models.CharField(max_length= 100)
     first_payment = models.DecimalField(max_digits=5, decimal_places=2,  default= 0)
     second_payment = models.DecimalField(max_digits=5, decimal_places=2,   default= 0)
     final_payment = models.DecimalField(max_digits=5, decimal_places=2, default= 0)
     total = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null = True, default= 0)
     created = models.DateField(auto_now_add=True, null = True)
     updated = models.DateField(auto_now=True, null = True)
-    
-    # @property
-    # def debtorFull(self, pk):    d
-    #     debtor_first = Debtor.objects.filter(self.first_payment__gte>0)&Debtor.objects.filter(self.debtor = pk)
-    #     debtor_second = Debtor.objects.filter(self.first_payment__gte>0)&Debtor.objects.filter(self.debtor = pk)
-    # ebtor_final = Debtor.objects.filter(self.first_payment__gte>0)&Debtor.objects.filter(self.debtor= pk)
-
-    
-    
-    
 
     def __str__(self):
         return self.product
