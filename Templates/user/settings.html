@@ -30,17 +30,8 @@
                                     <div class="card-body d-flex flex-column align-items-center justify-content-center">
                                         <p class="card-text">
                                             <img src="{{user.image.url}}" alt="Profile" width="100px" >
-                                            <a href="{% url 'updateUser' request.user.id %}">Edit Profile</a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card text-light bg-success">
-                                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                                        <p class="card-text">
-                                            <img src="{{user.image.url}}" alt="Profile" width="100px">
-                                            <a href="">View Profile</a>
+                                            <a href="{% url 'updateUser' request.user.id %}">Upload Image |</a>
+                                            <a href="{% url 'changeUserPassword' %}">Change Password</a>
                                         </p>
                                     </div>
                                 </div>

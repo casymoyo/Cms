@@ -68,7 +68,7 @@ class Debtor(models.Model):
     
 #work
 class Work(models.Model):
-    debtor = models.OneToOneField("base.Debtor", on_delete=models.CASCADE)
+    debtor = models.OneToOneField("base.Debtor", on_delete=models.CASCADE, primary_key=True)
     employer = models.CharField(max_length=50)
     address = models.CharField(max_length=50)
     employer_contact = models.CharField(max_length=50)
@@ -78,7 +78,7 @@ class Work(models.Model):
 
 #Product
 class Product(models.Model):
-    debtor = models.OneToOneField("base.Debtor", on_delete=models.CASCADE)
+    debtor = models.OneToOneField("base.Debtor", on_delete=models.CASCADE, primary_key=True)
     product = models.CharField(max_length=50)
     product_sn = models.CharField(max_length=50)
     product_amount = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)

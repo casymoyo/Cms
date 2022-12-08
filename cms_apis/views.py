@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework import generics
-from . serializers import DebtorSerializer, ProductSerializer
+from . serializers import DebtorSerializer, ProductSerializer, WorkSerializer
 from rest_framework.response import Response
-from base.models import Debtor, Product
+from base.models import Debtor, Product, Work
 
 
 # def debtor(request, pk):
@@ -32,3 +32,11 @@ class ProductstList(generics.ListCreateAPIView):
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+class WorkList(generics.ListCreateAPIView):
+    queryset = Work.objects.all()
+    serializer_class = WorkSerializer
+
+class WorkDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Work.objects.all()
+    serializer_class = WorkSerializer

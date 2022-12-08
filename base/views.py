@@ -11,6 +11,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import permission_required, login_required
 from json import dumps
 from notis.models import Notifications
+from django.contrib.auth.forms import PasswordChangeForm
 # from django.contrib.auth.models import permissions
 
 
@@ -48,29 +49,21 @@ def dashboard(request):
         fully_paid = Debtor.objects.filter(is_fully_paid = 'yes') & Debtor.objects.filter(user  = request.user.id)
         
         total_sp = debtors.aggregate(Sum('product__product_amount'))
-        
         total_dp = debtors.aggregate(Sum('product__deposit'))
+        debtor_thirty_amounts = debtors.aggregate(Sum('product__first_payment'))
+        debtor_sixty_amounts = debtors.aggregate(Sum('product__second_payment')) 
+        debtor_final_amounts = debtors.aggregate(Sum('product__final_payment'))
 
-        print(total_dp['product__deposit__sum'])
-        print(total_sp)
-        print(debtors)
         overdues_count = Debtor()
         overdues = Debtor()
-        total_amount = Debtor()
-        all_total_amounts = 0
+
         totals = 0
         
-        for debtor_amounts in total_amount.total:
-            for amounts in debtor_amounts.values():
-                try:
-                    all_total_amounts = amounts + all_total_amounts
-                except:
-                    pass
         try:
-            totals = all_total_amounts + total_dp['product__deposit__sum'] 
+            totals = total_dp['product__deposit__sum'] + debtor_thirty_amounts['product__first_payment__sum'] + debtor_sixty_amounts['product__second_payment__sum'] + debtor_final_amounts['product__final_payment__sum']
         except:
             pass
-
+        print(debtor_thirty_amounts)
         context = {
             'debtors': debtors.count(),
             'total':totals ,
@@ -173,7 +166,7 @@ def debtor(request, pk):
     except:
         return render(request, '404.html')
     context = {
-        'debtor': deb
+        'debtor': deb,
     }
     return render(request, 'debtors/debtor.html', context)
 
@@ -184,6 +177,12 @@ def createDebtor(request):
     form = debtorForm()
     if request.method == 'POST':
         form = debtorForm(request.POST)
+        # custom validation 
+        id_number = request.POST['id_number']
+        phonenumber = request.POST['phonenumber']
+        if len(id_number) < 10 or len(phonenumber) < 10:
+            messages.add_message(request, messages.WARNING, f'Check if Id number and phonenumber are correct')
+            return render(request, 'debtors/createDebtor.html', {'form': form})
         if form.is_valid():
             debtor_obj = form.save(commit=False)
             debtor_obj.user = request.user
@@ -198,7 +197,7 @@ def createDebtor(request):
             notis.save()
             #saving debtor object
             debtor_obj.save()
-            return redirect('debtors')
+            return redirect('debtor')
             messages.add_message(request, messages.SUCCESS, 'Debtor successfully added')
         else:
             messages.add_message(request, messages.WARNING, '* fill in all the required details')
@@ -296,7 +295,7 @@ def createWork(request, pk):
             )
             #saving notificatioin object
             work_obj.save()
-            return redirect('debtors')
+            return redirect('debtor', pk = pk)
             messages.add_message(request, messages.SUCCESS, 'Work details successfully added')
         else:
             messages.add_message(request, messages.WARNING, '* fill in all the required details')
@@ -309,7 +308,7 @@ def createWork(request, pk):
 @login_required(login_url = 'login')
 def updateWork(request, pk):
     try:
-        work = Work.objects.get(id = pk)
+        work = Work.objects.get(pk = pk)
     except:
         return render(request, '404.html')
 
@@ -325,9 +324,10 @@ def updateWork(request, pk):
         )
         #saving notificatioin object
         notis.save()
+        #saving form
         form.save()
         messages.add_message(request, messages.SUCCESS, f'{work.debtor.name} work details updated successfully')
-        return redirect('debtors')
+        return redirect('debtor', pk = pk)
     context = {
         'form':form,
         'name': work.debtor.name
@@ -344,26 +344,32 @@ def createProduct(request, pk):
     form = productForm()
     if request.method == 'POST':
         form = productForm(request.POST)
-        if form.is_valid():
-            product_obj = form.save(commit = False)
-            product_obj.product_id = deb.id
-            print(deb.id)
-            product_obj.debtor_id = deb.id
-            product_obj.total = request.POST['deposit']
-            # creating notification
-            notis, created = Notifications.objects.get_or_create(
-            user = request.user,
-            title = f'{deb.name}',
-            content = f'Created Product Details',
-            partial_id = deb.phonenumber
-            )
-            #saving notificatioin object
-            product_obj.save()
-            return redirect('debtors')
-            messages.add_message(request, messages.SUCCESS, 'Product details successfully added')
+        # validation
+        product_amount = request.POST['product_amount']
+        deposit =  request.POST['deposit']
+        if int(product_amount) < 0 or int(deposit) < 0:
+            messages.add_message(request, messages.Warning, f'The deposit amount or product amount should not be less than 0')
+            return render(request, 'debtors/createProduct.html', {'form': form})
         else:
-            messages.add_message(request, messages.WARNING, '* fill in all the required details')
-            return redirect('createProduct')
+            if form.is_valid():
+                product_obj = form.save(commit = False)
+                product_obj.product_id = deb.id
+                product_obj.debtor_id = deb.id
+                product_obj.total = request.POST['deposit']
+                # creating notification
+                notis, created = Notifications.objects.get_or_create(
+                    user = request.user,
+                    title = f'{deb.name}',
+                    content = f'Created Product Details',
+                    partial_id = deb.phonenumber #for notification look up
+                )
+                #saving notificatioin object
+                product_obj.save()
+                messages.add_message(request, messages.SUCCESS, 'Product details successfully added')
+                return redirect('debtor', pk = pk)
+            else:
+                messages.add_message(request, messages.WARNING, '* fill in all the required details')
+                return redirect('createProduct')
     context = {
         'form':form
     }
@@ -379,6 +385,11 @@ def updateProduct(request, pk):
     form = updateProductForm(request.POST or None, instance = product)
 
     if form.is_valid():
+        product_obj = form.save(commit = False)
+        
+        if product_obj.product_amount < 0 or product_obj.deposit < 0:
+            messages.add_message(request, messages.WARNING, f'The deposit amount or product amount should not be less than 0')
+            return render(request, 'debtors/createProduct.html', {'form':form})
         # creating notification
         notis, created = Notifications.objects.get_or_create(
             user = request.user,
@@ -387,13 +398,13 @@ def updateProduct(request, pk):
             partial_id = product.debtor.phonenumber
             )
         #saving notificatioin object
-        form.save()
+        product_obj.save()
         messages.add_message(request, messages.SUCCESS, f'{product.debtor.name} product details updated successfully')
-        return redirect('debtors')
+        return redirect('debtor', pk = pk)
     context = {
-        'form':form,
-        'name': product.debtor.name
-    }
+            'form':form,
+            'name': product.debtor.name
+        }
     return render(request, 'debtors/createProduct.html', context)
 
 @login_required(login_url = 'login')
@@ -445,7 +456,7 @@ def updatePayment(request, pk):
         #saving notificatioin object
         payment_obj.save()
         messages.add_message(request, messages.SUCCESS, f'{product.debtor.name} payment details updated successfully')
-        return redirect('debtors')
+        return redirect('debtor', pk = pk)
 
     context = {
         'form':form,
@@ -524,16 +535,18 @@ def createUser(request):
             return redirect('userManagement')
     return render(request,'user/createUser.html', {'form':form} )  
 
+@login_required(login_url = 'login')
 def updateUser(request, pk):
     user = User.objects.get(pk = pk)
     form = updateUserForm()
     if request.method == 'POST':
-        form = updateUserForm(request.POST)
+        form = updateUserForm(request.POST, request.FILES or None, instance=user)
+        
         if form.is_valid:
             form.save()
     return render(request, 'user/editProfile.html', {'user':user, 'form':form})
 
-
+@login_required(login_url = 'login')
 def userDebtors(request, pk):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     debtors = Debtor.objects.filter(
@@ -548,6 +561,7 @@ def userDebtors(request, pk):
     ) & Debtor.objects.filter(user = pk)
     return render(request, 'user/userDebtors.html', {'debtors':debtors})
 
+@login_required(login_url = 'login')
 def userSettings(request, pk):
     try:
         user = User.objects.get(pk = pk)
@@ -584,3 +598,17 @@ def userPermissions(request, pk):
 
     return redirect('userManagement')
 
+@login_required(login_url = 'login')
+def changeUserPassword(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('changeUserPassword')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'accounts/change_password.html', {'form': form})

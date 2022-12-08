@@ -8,11 +8,10 @@ class createUserForm(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name', 'position', 'username', 'password1']
 
-class updateUserForm(UserCreationForm):
+class updateUserForm(ModelForm):
     class Meta:
         model = User
         fields = ['image']
-        exclude = ['password1']
 class debtorForm(ModelForm):
     
     class Meta:
