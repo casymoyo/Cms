@@ -12,87 +12,127 @@
     }
     table tr{
         width: 300px;
+        border: 1px solid #fff;
+    }
+    .sendMessage{
+        cursor: pointer;
     }
 </style>
 <div class="dash">
-    <div class="">
     {% include 'base/aside.html' %}
-    </div>
     <div class="center-panel">
+        <div class="aside-responsive">
+            {% include 'base/asideResponsive.html' %}
+        </div>
         {% include 'base/header.html' %}
         <section class="main-app-area mt-3">
             <div class="container">
+                {% include 'base/asideBlock.html' %}
                 <div class="heading d-flex justify-content-between align-items-center mb-4 bg-secondary text-light">
                     <div class="debtor-details d-flex align-items-center px-2">
                         <h4>{{debtor.name}} {{debtor.surname}}</h4>
                         <span class="px-3 sendMessage" style="text-decoration: none ; color: greenyellow;"><i class="bi bi-phone"></i>{{debtor.phonenumber}}</span>
                         <span><i class="bi bi-geo-alt"></i>{{debtor.address}} </span>
                     </div>
-                    <div class="button d-flex py-2">
+                    <div class="button d-flex py-2  px-2">
                         <a href="{% url 'activity' debtor.id %}" class="btn btn-secondary">
-                            <span class="px-3">View Account Activity</span>
-                        </a> 
+                            <span class="">View Account Activity</span>
+                        </a>
+                        <a href="" class="btn btn-secondary">
+                            <span class="">Save To Pdf</span>
+                        </a>
+                        {% if debtor.is_fully_paid == 'no' %}
+                            <a href="{% url 'cancelDebtor' debtor.id %}" class="btn btn-secondary">Cancel Debtor</a>
+                        {% endif %}
                     </div>
                 </div>
                     <div class="row">
                         <div class="col">
                             <div class="card text">
                                 <div class="card-body">
-                                    <div class="title d-flex align-items-center justify-content-between">
-                                        <h5>Work Details</h5>
+                                    <div class="title d-flex align-items-center justify-content-between bg-success text-light">
+                                        <h5 class="px-2">Work Details</h5>
                                         <div class="buttons">
-                                            <a href="{% url 'updateWork' debtor.id %}"><button class="btn btn-light">Update Details</button></a>
-                                            <a href="{% url 'createWork' debtor.id %}"><button class="btn btn-light">Add Details</button></a>
+                                            <a href="{% url 'updateWork' debtor.id %}"><button class="btn btn-success">Update Details</button></a>
+                                            <a href="{% url 'createWork' debtor.id %}"><button class="btn btn-success addDetails">Add Details</button></a>
                                         </div>
                                     </div>
                                     <div class="details-group">
-                                        <h6 class="check"><i class="bi bi-building px-1"></i>{{debtor.work}}</h6>
-                                        <h6><i class="bi bi-geo-alt px-1"></i>{{debtor.work.address}}</h6>
-                                        <h6><i class="bi bi-phone px-1"></i><a href="tel:'{{debtor.work.employer_contact}}'" style="color: #333; text-decoration: none;">{{debtor.work.employer_contact}}</a></h6>
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr class="">
+                                                    <td class="py-2"><i class="bi bi-building px-1"></i>Company Name</td>
+                                                    <td class="check">{{debtor.work}}</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td class="py-2"><i class="bi bi-geo-alt px-1"></i>Company Address</td>
+                                                    <td class="">{{debtor.work.address}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class=""><i class="bi bi-phone px-1"></i>
+                                                        Company Contact
+                                                    </td>
+                                                    <td class="">{{debtor.work.employer_contact}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="title d-flex align-items-center justify-content-between">
-                                        <h5>Product Details</h5>
+                                    <div class="title d-flex align-items-center justify-content-between bg-success text-light">
+                                        <h5 class="px-2">Product Details</h5>
                                         <div class="buttons">
-                                            <a href="{% url 'updateProduct' debtor.id %}"><button class="btn btn-light">Update Details</button></a>
-                                            <a href="{% url 'createProduct' debtor.id %}"><button class="btn btn-light">Add Details</button></a>
+                                            <a href="{% url 'updateProduct' debtor.id %}"><button class="btn btn-success">Update Details</button></a>
+                                            <a href="{% url 'createProduct' debtor.id %}"><button class="btn btn-success addDetails">Add Details</button></a>
                                         </div>
                                     </div>
                                     <div class="details-group">
-                                        <h6 class="check"><i class="bi bi-laptop px-1"></i>{{debtor.product}}</h6>
-                                        <h6><i class="bi bi-upc px-1"></i>{{debtor.product.product_sn}}</h6>
-                                        <h6><i i class="bi bi-upc px-1"></i> Selling Price ${{debtor.product.product_amount}}</h6>
-                                        <h6><i i class="bi bi-upc px-1"></i>Deposit ${{debtor.product.deposit}}</h6>
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr class="">
+                                                    <td class="py-2"><i class="bi bi-laptop px-1"></i>Product Name</td>
+                                                    <td class="check">{{debtor.product}}</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td class="py-2"><i class="bi bi-upc px-1"></i>Serial Number</td>
+                                                    <td class="">{{debtor.product.product_sn}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class=""><i class="bi bi-laptop px-1"></i>Selling Price</td>
+                                                    <td class="">${{debtor.product.product_amount}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-2"><i class="bi bi-laptop px-1"></i>Deposited Amount</td>
+                                                    <td class="">${{debtor.product.deposit}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="title d-flex align-items-center justify-content-between">
-                                        <h5>Payment Details</h5>
+                                    <div class="title d-flex align-items-center justify-content-between bg-success text-light">
+                                        <h5 class="px-2">Payment Details</h5>
                                         <div class="buttons">
-                                            <a href="{% url 'updatePayment' debtor.id %}"><button class="btn btn-light">Update Payments</button></a>
+                                            <a href="{% url 'updatePayment' debtor.id %}"><button class="btn btn-success">Update Payments</button></a>
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-between">
-                                    <table class="h6">
+                                    <table class="table table-hover">
                                         <tbody>
                                             <tr class="">
-                                                <td class="px-2 py-2">First Payment</td>
-                                                <td class="px-2">${{debtor.product.first_payment}}</td>
+                                                <td class="py-2">First Payment</td>
+                                                <td class="">${{debtor.product.first_payment}}</td>
                                             </tr>
                                             <tr>
-                                                <td class="px-2">Second Payment</td>
-                                                <td class="px-2">${{debtor.product.second_payment}}</td>
+                                                <td class="">Second Payment</td>
+                                                <td class="">${{debtor.product.second_payment}}</td>
                                             </tr>
                                             <tr>
-                                                <td class="px-2 py-2">Final Payment</td>
-                                                <td class="px-2">${{debtor.product.final_payment}}</td>
+                                                <td class="py-2">Final Payment</td>
+                                                <td class="">${{debtor.product.final_payment}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                        <div class="mt-5">
-                                            <a href="{% url 'cancelDebtor' debtor.id %}" class="btn btn-danger">Cancel Debtor</a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -102,11 +142,8 @@
         </section>
 </div>
 <script>
-    
     let send = document.querySelector('.sendMessage')
-    let payment = 0
     let title = ''
-    console.log(send)
     send.addEventListener(
         'click', function(){
             console.log("message sent")
@@ -120,6 +157,20 @@
             window.open(url)
         }
     )
+    {% comment %} document.addEventListener('DOMContentLoaded', function(){
+        let btn = document.querySelectorAll('.addDetails')
+        let details =  document.querySelectorAll('.check')
+        console.log(details[1].textContent)
+        console.log('works')
+        if(btn[0].textContent !== ''){
+            btn[0].hidden = true
+            console.log('true')
+        }
+        if(btn[1].innerHTML !== ''){
+            btn[1].hidden = true
+            console.log('true')
+        }
+    }) {% endcomment %}
 
 </script>
 {% endblock content %}

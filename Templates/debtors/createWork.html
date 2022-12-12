@@ -51,24 +51,61 @@ form label{
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     height: 80vh;
 }
+.left-panel{
+    background:#f8f9fa;
+}
+.top-panel{
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.top-panel a{
+    text-decoration: none;
+    color: #333;
+}
+.top-panel ul{
+    list-style: none;
+}
+.top-panel .drop-menu i{
+    font-size: 18px;
+}
+.top-panel{
+    height: 56px;
+    border: none;
+}
 </style>
 <div class="dash">
     {% include 'base/aside.html' %}
     <div class="center-panel">
-        <nav class="navbar">
-                <h5 class="px-2">Enter Work Details For</h5>
-            <div class="user-notifications px-4 d-flex align-items-center">
-                <img src="{{user.image.url}}" alt="image" width="30px">
-                <small class="px-3">{{user.username}}</small>
-                <small><i class="bi bi-gear" onclick="settingsShow();"></i></small>
+        <div class="container">
+            <div class="top-panel text-dark d-flex flex-row justify-content-between">
+                <div class="dash-logo d-flex align-items-center justify-content-between py-3">
+                    <div class="px-2">
+                        <img src="{% static 'assets/tc_logo.png' %}" alt="logo" class="" width='30px'>
+                        <small class="text-dark">C M S</small>
+                    </div>
+                </div>
+                <div class="top-panel-contents py-3 ">
+                    <div class="user-notifications px-4 d-flex align-items-center">
+                        <img src="{{user.image.url}}" alt="image" width="30px">
+                        <small class="px-3">{{user.username}}</small>
+                        <small><i class="bi bi-bell" onclick="notficationsShow();"></i></small>
+                        <small><i class="bi bi-gear px-3" onclick="settingsShow();"></i></small>
+                        <div class="drop-menu">
+                            <i class="bi bi-list px-2"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </nav>
+            </div>
         <div class="settings-show">
             <a href="{% url 'userSettings' request.user.id %}">settings</a><br>
             <a href="{% url 'logout' %}">Logout</a>
         </div>
         <section class="main-app-area mt-3">
             <div class="container">
+                <div class="heading d-flex justify-content-between align-items-center mb-4 py-2 bg-secondary text-light">
+                    <h4 class="px-2">Enter Work Details For {{debtor.name}}</h4>
+                </div>
                 <div class="form d-flex justify-content-center">
                     <form action="" method="post" class="d-flex  flex-column py-5">
                         {% csrf_token %}

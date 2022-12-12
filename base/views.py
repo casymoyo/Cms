@@ -46,8 +46,10 @@ def dashboard(request):
         q = request.GET.get('q') if request.GET.get('q') != None else ''
         notis = Notifications.objects.filter(Q(created__icontains = q))
         debtors = Debtor.objects.filter(user = request.user.id)
-        fully_paid = Debtor.objects.filter(is_fully_paid = 'yes') & Debtor.objects.filter(user  = request.user.id)
-        
+        try:
+            fully_paid = Debtor.objects.filter(is_fully_paid = 'yes') & Debtor.objects.filter(user  = request.user.id)
+        except:
+            pass
         total_sp = debtors.aggregate(Sum('product__product_amount'))
         total_dp = debtors.aggregate(Sum('product__deposit'))
         debtor_thirty_amounts = debtors.aggregate(Sum('product__first_payment'))
@@ -80,6 +82,7 @@ def dashboard(request):
 def adminDashboard(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     notis = Notifications.objects.filter(Q(created__icontains = q))
+    canclledCount = Debtor.objects.filter(status = 'cancelled').count()
     debtors = Debtor.objects.all()
     fully_paid = Debtor.objects.filter(is_fully_paid = 'yes').count()
     total_sp = Debtor.objects.aggregate(Sum('product__product_amount'))
@@ -102,9 +105,10 @@ def adminDashboard(request):
     except:
         pass
     context = {
-        'debtors': debtors.count(),
         'total':totals ,
         'activities': notis,
+        'debtors': debtors.count(),
+        'cancelledCount':canclledCount,
         'total_sp': total_sp['product__product_amount__sum'],
         'fully_paid': fully_paid,
         'overdues_count': overdues_count.due_in_thirty.count() + overdues_count.due_in_sixty.count() + overdues_count.due_in_ninety.count() 
@@ -113,7 +117,6 @@ def adminDashboard(request):
 
 @login_required(login_url = 'login')
 def debtors(request):
-        canclledCount = Debtor.objects.filter(status = 'cancelled').count()
         if request.user.position != 'admin':
             q = request.GET.get('q') if request.GET.get('q') != None else ''
             debtors = Debtor.objects.filter(
@@ -132,7 +135,6 @@ def debtors(request):
                 'overdue_thirty':overdues.due_in_thirty.count(),
                 'overdue_sixty':overdues.due_in_sixty.count(),
                 'overdue_ninety':overdues.due_in_ninety.count(),
-                'cancelledCount':canclledCount,
             }
             return render(request, 'debtors/debtors.html', context)
         else:
@@ -153,7 +155,6 @@ def debtors(request):
                 'overdue_thirty':overdues.due_in_thirty.count(),
                 'overdue_sixty':overdues.due_in_sixty.count(),
                 'overdue_ninety':overdues.due_in_ninety.count(),
-                'cancelledCount':canclledCount,
             }
             print((context))
             return render(request, 'debtors/debtors.html', context)
@@ -197,7 +198,7 @@ def createDebtor(request):
             notis.save()
             #saving debtor object
             debtor_obj.save()
-            return redirect('debtor')
+            return redirect('debtors')
             messages.add_message(request, messages.SUCCESS, 'Debtor successfully added')
         else:
             messages.add_message(request, messages.WARNING, '* fill in all the required details')
@@ -369,7 +370,7 @@ def createProduct(request, pk):
                 return redirect('debtor', pk = pk)
             else:
                 messages.add_message(request, messages.WARNING, '* fill in all the required details')
-                return redirect('createProduct')
+                return redirect('createProduct', pk)
     context = {
         'form':form
     }
@@ -455,7 +456,6 @@ def updatePayment(request, pk):
             )
         #saving notificatioin object
         payment_obj.save()
-        messages.add_message(request, messages.SUCCESS, f'{product.debtor.name} payment details updated successfully')
         return redirect('debtor', pk = pk)
 
     context = {
@@ -612,3 +612,6 @@ def changeUserPassword(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'accounts/change_password.html', {'form': form})
+
+def generatePdf(request, pk):
+    pass

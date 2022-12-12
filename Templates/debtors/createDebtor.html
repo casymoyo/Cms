@@ -52,7 +52,10 @@ form label{
 <div class="dash">
     {% include 'base/aside.html' %}
     <div class="center-panel">
-        <nav class="navbar">
+        <div class="aside-responsive">
+            {% include 'base/asideResponsive.html' %}
+        </div>
+        <nav class="navbar d-none d-lg-block d-xl-block">
             <div class="search px-3 d-flex align-items-center">
                 <h5>Enter Debtor Details</h5>
             </div>
@@ -68,6 +71,7 @@ form label{
         </div>
         <section class="main-app-area mt-3">
             <div class="container">
+                {% include 'base/asideBlock.html' %}
                 <div class="form d-flex justify-content-center">
                     <form action="" method="post" class="d-flex  flex-column py-5">
                         {% csrf_token %}

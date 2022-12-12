@@ -38,8 +38,8 @@
     border: none;
 }
 .dash{
-    /* {% comment %} display: grid;
-    grid-template-columns: 0.5fr 3fr; {% endcomment %} */
     display:flex;
     flex-direction: row;
 }
+
+/* navbar responsive */

@@ -25,5 +25,25 @@
     <script src="{% static 'css/bootstrap/js/bootstrap.min.css' %}"></script>
     <script src="{% static 'js/jquery.js' %}"></script>
     <script src=""></script>
+    <script>
+        function show(){
+        let list = document.querySelector('.bi-list')
+        let aside = document.querySelector('.repo-panel')
+        
+        if(!aside.classList.contains('show')){
+            console.log('doesnt contain')
+            // list.classList.remove('bi-list')
+            // list.classList.add('bi-x')
+            aside.classList.add('show')
+            
+        }
+        else{
+            // list.classList.remove('bi-x')
+            // list.classList.add('bi-list')
+            aside.classList.remove('show')
+            
+        }
+        }
+    </script>
 </body>
 </html>

@@ -13,10 +13,10 @@
         width:33.3%;
         height: 33.3%;
     }
-    @media only screen and (max-width: 450px) {
+    @media only screen and (max-width: 600px) {
         .cards .col .card .card-body{
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
         }
   }
 </style>
@@ -29,12 +29,21 @@
             {% include 'base/header.html' %}
             <section class="main-app-area mt-4">
                 <div class="container">
+                    <div>
+                        {% include 'base/asideBlock.html' %}
+                    </div>
                     <div class="head d-flex justify-content-between align-items-center mb-4 bg-secondary text-light py-2">
                         <h4 class="px-2">Dashboard</h4>
                         <div class="button">
                             <a href="{% url 'debtors' %}">
                                 <div class="btn btn btn-secondary">Debtors<span class="badge" style="color:#f06721;">{{debtors}}</span></div>
                             </a>
+                            {% if request.user.position == 'admin' %}
+                                <a href="{% url 'cancelledDebtorList' %}" class="btn btn-secondary px-2">
+                                    Cancelled debtors
+                                    <span class="badge" style="color: #f06721;">{{cancelledCount}}</span>
+                                </a>
+                            {% endif %}
                             <a href="{% url 'fullyPaidDebtors' %}"class="btn btn btn-secondary">Fully Paid<span class="badge" style="color:#f06721;">{{fully_paid}}</span></a>
                             <a href="{% url 'overdues' %}"class="btn btn btn-secondary">Overdues<span class="badge" style="color:#f06721;">{{overdues_count}}</span></a>
                             <a href="{% url 'payment' %}"class="btn btn btn-secondary">Payments</a>

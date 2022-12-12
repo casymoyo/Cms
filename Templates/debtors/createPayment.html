@@ -53,20 +53,12 @@ form label{
 }
 .form{
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    height: 80vh;
 }
 </style>
 <div class="dash">
     {% include 'base/aside.html' %}
     <div class="center-panel">
-        <nav class="navbar">
-            <h5 class="px-2">Update payment for {{name}}</h5>
-            <div class="user-notifications px-4 d-flex align-items-center">
-                <img src="{{user.image.url}}" alt="image" width="30px">
-                <small class="px-3">{{user.username}}</small>
-                <small><i class="bi bi-gear" onclick="settingsShow();"></i></small>
-            </div>
-        </nav>
+        {% include 'base/asideResponsive.html' %}
         <div class="settings-show">
             <a href="{% url 'userSettings' request.user.id %}">settings</a><br>
             <a href="{% url 'logout' %}">Logout</a>
@@ -74,6 +66,10 @@ form label{
         <section class="main-app-area mt-4">
             <div id="error" class="error alert alert-warning" role="alert" style="display:none;"></div>
             <div class="container">
+                {% include 'base/asideBlock.html' %}
+                <div class="heading d-flex justify-content-between align-items-center mb-4 py-2 bg-secondary text-light">
+                    <h4 class="px-2">Enter Payment Details For {{name}}</h4>
+                </div>
                 <div class="form d-flex justify-content-center py-5 mt-4">
                     {% if product.debtor.is_fully_paid == 'yes' %} 
                         <h3>Account is Fully paid</h3>
@@ -107,7 +103,6 @@ form label{
     let btn2 = document.getElementById('btn-2')
     let error = document.querySelector('.error')
     
-    let form = document.getElementsByTagName('form').setAttribute('novalidate', true)
     let total = (Number(deposit.value) + Number(firstPayment.value) + Number(secondPayment.value) + Number(finalPayment.value))
     
     btn2.disabled = true;
@@ -129,9 +124,8 @@ form label{
             }
             else if(total == Number(product_amount)
             ){
-                let error = document.querySelector('.error') 
-                error.style.display="block";
-                error.innerHTML = `Total payment $${total} cant exceed selling price $${product_amount}`;
+                btn1.disabled = true;
+                btn2.disabled = false;
             }
             else{
                 btn1.disabled = true;
@@ -140,38 +134,38 @@ form label{
         }
     )
    
-    if(deposit.value == 0){
-            firstPayment.disabled = true;
-            secondPayment.disabled = true;
-            finalPayment.disabled = true;
-        }
-        else if((deposit.value != 0) & (firstPayment.value == 0)) {
-            deposit.disabled = true;
-            secondPayment.disabled = true;
-            finalPayment.disabled = true;
-        }
-        else if((deposit.value != 0) & 
-            (firstPayment.value != 0)& 
-            (secondPayment.value == 0)) {
+    // if(deposit.value == 0){
+    //         firstPayment.disabled = true;
+    //         secondPayment.disabled = true;
+    //         finalPayment.disabled = true;
+    //     }
+    //     else if((deposit.value != 0) & (firstPayment.value == 0)) {
+    //         deposit.disabled = true;
+    //         secondPayment.disabled = true;
+    //         finalPayment.disabled = true;
+    //     }
+    //     else if((deposit.value != 0) & 
+    //         (firstPayment.value != 0)& 
+    //         (secondPayment.value == 0)) {
 
-            deposit.disabled = true;
-            firstPayment.disabled = true
-            finalPayment.disabled = true;
-        }
-        else if((deposit.value != 0) & 
-            (firstPayment.value != 0)& 
-            (secondPayment.value != 0)&
-            (finalPayment.value == 0)) {
+    //         deposit.disabled = true;
+    //         firstPayment.disabled = true
+    //         finalPayment.disabled = true;
+    //     }
+    //     else if((deposit.value != 0) & 
+    //         (firstPayment.value != 0)& 
+    //         (secondPayment.value != 0)&
+    //         (finalPayment.value == 0)) {
 
-            deposit.disabled = true;
-            firstPayment.disabled = true;
-            secondPayment.disabled = true;
-        }else{
-            console.log('all payments are met')
-            deposit.disabled = true;
-            firstPayment.disabled = true;
-            secondPayment.disabled = true;
-            finalPayment.disabled = true;
-        }
+    //         deposit.disabled = true;
+    //         firstPayment.disabled = true;
+    //         secondPayment.disabled = true;
+    //     }else{
+    //         console.log('all payments are met')
+    //         deposit.disabled = true;
+    //         firstPayment.disabled = true;
+    //         secondPayment.disabled = true;
+    //         finalPayment.disabled = true;
+    //     }
 </script>
 {% endblock content %}

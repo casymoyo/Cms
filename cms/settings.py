@@ -71,6 +71,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+    # 'default': {
+    #     'ENGINE'  : 'django.db.backends.mysql', # <-- UPDATED line 
+    #     'NAME'    : 'cmsDb',                 # <-- UPDATED line 
+    #     'USER'    : 'root',                     # <-- UPDATED line
+    #     'PASSWORD': 'neverfail',              # <-- UPDATED line
+    #     'HOST'    : 'localhost',                # <-- UPDATED line
+    #     'PORT'    : '3306',
+    # }
 }
 
 

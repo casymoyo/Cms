@@ -1,0 +1,60 @@
+{% load static %}
+<style>
+    .repo-panel{
+        background:#f8f9fa;
+        width: 35%;
+        display:none;
+    }
+    .repo-panel a{
+        text-decoration: none;
+        color: #333;
+    }
+    .repo-panel ul{
+        list-style: none;
+    }
+    .repo-panel .drop-menu i{
+        font-size: 18px;
+    }
+   
+    .show{
+        display:block;
+        position:absolute;
+        top:0;
+        left:0;
+        height:100vh;
+    }
+</style>
+<div class="repo-panel bg-light text-dark">
+    <div class="dash-logo d-flex align-items-center justify-content-between py-3">
+        <div class="px- text-center">
+            <img src="{% static 'assets/tc_logo.png' %}" alt="logo" class="" width='30px'>
+            <small class="text-dark">C M S</small>
+        </div>
+    </div>
+    <div class="left-panel-contents py-3">
+        <ul>
+            <li>
+                <a href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 px-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'debtors' %}"><i class="bi bi-people px-2"></i>
+                    Debtors
+                </a>
+            </li> 
+            <li>
+                <a href="{% url 'payment' %}"><i class="bi bi-credit-card px-2"></i>
+                    Payments
+                </a>
+            </li>
+            {% if request.user.is_superuser %}
+                <li>
+                    <a href="{% url 'userManagement'%}"><i class="bi bi-person-plus px-2"></i>
+                        Manage Users
+                    </a>
+                </li>
+            {% endif %}     
+        </ul>
+    </div>
+</div>

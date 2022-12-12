@@ -18,9 +18,13 @@
 <div class="dash">
     {% include 'base/aside.html' %}
     <div class="center-panel">
+        <div class="aside-responsive">
+            {% include 'base/asideResponsive.html' %}
+        </div>
         {% include 'base/header.html' %}
         <section class="main-app-area mt-4">
             <div class="container">
+                {% include 'base/asideBlock.html' %}
                 {% if messages %}
                         <ul class="messages">
                             {% for message in messages %}
@@ -44,7 +48,7 @@
                         {% endif %}
                     </div>
                 </div>
-                    <table class="table table-striped table-responsive table-hover" id="table">
+                    <table class="table table-striped table-responsive table-hover table-small" id="table">
                         <caption>List of Debtors</caption>
                         <thead>
                             <th>Name</th>

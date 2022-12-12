@@ -31,9 +31,9 @@ class Debtor(models.Model):
     address = models.CharField(max_length=50)
     phonenumber = models.CharField(max_length=10)
     id_number = models.CharField(max_length=14)
+    is_fully_paid = models.CharField(max_length=50, default = 'no', null=True, blank = True)
     status = models.CharField(max_length=50, default = '', blank = True )
     created = models.DateField(auto_now_add=True)
-    is_fully_paid = models.CharField(max_length=50, default = 'no', null=True, blank = True)
     first_payment_date = models.DateField(default = date.today() + timedelta(days=30), null = True)
     second_payment_date = models.DateField(default = date.today() + timedelta(days=60), null = True)
     final_payment_date = models.DateField(default = date.today() + timedelta(days=90), null = True)
@@ -81,16 +81,15 @@ class Product(models.Model):
     debtor = models.OneToOneField("base.Debtor", on_delete=models.CASCADE, primary_key=True)
     product = models.CharField(max_length=50)
     product_sn = models.CharField(max_length=50)
-    product_amount = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
+    product_amount = models.DecimalField(max_digits=6, decimal_places=2, null = True, blank = True, default= 0)
     deposit = models.DecimalField(max_digits=5, decimal_places=2, null = True, blank = True, default= 0)
     product_details = models.CharField(max_length= 100)
-    first_payment = models.DecimalField(max_digits=5, decimal_places=2,  default= 0)
-    second_payment = models.DecimalField(max_digits=5, decimal_places=2,   default= 0)
-    final_payment = models.DecimalField(max_digits=5, decimal_places=2, default= 0)
-    total = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null = True, default= 0)
+    first_payment = models.DecimalField(max_digits=6, decimal_places=2,  default= 0)
+    second_payment = models.DecimalField(max_digits=6, decimal_places=2,   default= 0)
+    final_payment = models.DecimalField(max_digits=6, decimal_places=2, default= 0)
+    total = models.DecimalField(max_digits=6, decimal_places=2, blank = True, null = True, default= 0)
     created = models.DateField(auto_now_add=True, null = True)
     updated = models.DateField(auto_now=True, null = True)
-
     def __str__(self):
         return self.product
     
