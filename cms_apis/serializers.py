@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from base.models import Debtor, Product, Work
+from base.models import Debtor, Product, Work, User
 
 class DebtorSerializer(serializers.ModelSerializer):
 
@@ -17,4 +17,10 @@ class WorkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Work
+        fields = "__all__"
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
         fields = "__all__"
