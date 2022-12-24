@@ -1,0 +1,118 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .status{
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        padding: 1px;
+    }
+    .card{
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) ;
+    }
+    table{
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) ;
+    }
+    
+</style>
+<div class="dash">
+    {% include 'base/aside.html' %}
+    <div class="center-panel">
+        {% include 'base/header.html' %}
+        <section class="main-app-area mt-4">
+            <div class="container">
+                <div class="heading d-flex justify-content-between align-items-center mb-4">
+                    <div class="debtor-details d-flex align-items-center">
+                        <h4>{{debtor.name}} {{debtor.surname}}</h4>
+                        <span class="px-3"><i class="bi bi-phone"></i><a href="tel:+263'{{debtor.phonenumber}}'" style="text-decoration: none ; color: #333;">{{debtor.phonenumber}}</a></span>
+                        <span><i class="bi bi-geo-alt"></i>{{debtor.address}} </span>
+                    </div>
+                    <div class="button d-flex">
+                        <span class="px-3">Status:</span>
+                        {% if debtor.status == none %}
+                            <p class="bg-danger text-light status"><small class="px-1">Still Owing</small></p>
+                        {% else %}
+                            <p class="bg-success text-light status"><small class="px-1">Fully Paid</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="title d-flex align-items-center justify-content-between">
+                                        <h5>Work Details</h5>
+                                        <div class="buttons">
+                                            <a href="{% url 'updateWork' debtor.id %}"><button class="btn btn-light">Update Details</button></a>
+                                            <a href="{% url 'createWork' debtor.id %}"><button class="btn btn-light">Add Details</button></a>
+                                        </div>
+                                    </div>
+                                    <div class="details-group">
+                                        <h6 class="check"><i class="bi bi-building px-1"></i>{{debtor.work}}</h6>
+                                        <h6><i class="bi bi-geo-alt px-1"></i>{{debtor.work.address}}</h6>
+                                        <h6><i class="bi bi-phone px-1"></i><a href="tel:'{{debtor.work.employer_contact}}'" style="color: #333; text-decoration: none;">{{debtor.work.employer_contact}}</a></h6>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="title d-flex align-items-center justify-content-between">
+                                        <h5>Product Details</h5>
+                                        <div class="buttons">
+                                            <a href="{% url 'updateProduct' debtor.id %}"><button class="btn btn-light">Update Details</button></a>
+                                            <a href="{% url 'createProduct' debtor.id %}"><button class="btn btn-light">Add Details</button></a>
+                                        </div>
+                                    </div>
+                                    <div class="details-group">
+                                        <h6 class="check"><i class="bi bi-laptop px-1"></i>{{debtor.product}}</h6>
+                                        <h6><i class="bi bi-upc px-1"></i>{{debtor.product.product_sn}}</h6>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="title d-flex align-items-center justify-content-between">
+                                        <h5>Payment Details</h5>
+                                        <div class="buttons">
+                                            <a href="{% url 'updatePayment' debtor.id %}"><button class="btn btn-light">Update Payments</button></a>
+                                        </div>
+                                    </div>
+                                    <h6 class="check">${{debtor.product.deposit}}</h6>
+                                    <table class="h6">
+                                        <tbody>
+                                            <tr class="">
+                                                <td class="px-2 py-2">First Payment</td>
+                                                <td class="px-2">${{debtor.product.first_payment}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-2">Second Payment</td>
+                                                <td class="px-2">${{debtor.product.second_payment}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-2 py-2">Final Payment</td>
+                                                <td class="px-2">${{debtor.product.final_payment}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </section>
+</div>
+<script>
+    
+    let parentElement = document.querySelectorAll('.card-body')
+
+    let card1 = parentElement[0].querySelectorAll('.check')
+    let card2 = parentElement[1].querySelectorAll('.check')
+    let card3 = parentElement[2].querySelectorAll('.check')
+
+    let card1Btn = card1[0].querySelectorAll('.btn')
+    let card2Btn = card2[1].querySelectorAll('.btn')
+    let card3Btn = card3[2].querySelectorAll('.btn')
+
+    console.log(card1)
+    if (card1.textContent == ''){
+
+    }
+</script>
+{% endblock content %}

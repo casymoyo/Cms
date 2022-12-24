@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .btn-dark{
+    margin-top: 25px;
+}
+form input{
+    border: 1px solid black;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    width: 250px;
+    opacity: 0.8;
+}
+form label{
+    margin-top: 20px;
+    opacity: 0.8;
+}
+.navbar{
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.settings-show{
+    display: none;
+    position: absolute;
+    right: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    width: 8%;
+    height: 8%;
+    text-align: center;
+    background: #fefefefe;
+}
+.navbar i{
+    cursor: pointer;
+}
+.settings-show a{
+    padding: 5px;
+    text-decoration: none;
+    color: #333;
+}
+.search{
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    width: 240px;
+}
+.search input{
+    border: none;
+}
+.form{
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    height: 80vh;
+}
+</style>
+<div class="dash">
+    {% include 'base/aside.html' %}
+    <div class="center-panel">
+        <nav class="navbar">
+                <h5 class="px-2">Enter Work Details For</h5>
+            <div class="user-notifications px-4 d-flex align-items-center">
+                <img src="{{user.image.url}}" alt="image" width="30px">
+                <small class="px-3">{{user.username}}</small>
+                <small><i class="bi bi-gear" onclick="settingsShow();"></i></small>
+            </div>
+        </nav>
+        <section class="main-app-area mt-3">
+            <div class="container">
+                <div class="form d-flex justify-content-center">
+                    <form action="" method="post" class="d-flex  flex-column">
+                        {% csrf_token %}
+                        {{form.as_table}}
+                        <button class="btn btn-dark">Submit</button>
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </section>
+</div>
+{% endblock content %}

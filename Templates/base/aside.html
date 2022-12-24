@@ -1,0 +1,56 @@
+{% load static %}
+<style>
+    .left-panel{
+        height: 100vh;
+    }
+    .left-panel a{
+        text-decoration: none;
+        color: #fff;
+    }
+    .left-panel ul{
+        list-style: none;
+    }
+    .left-panel .drop-menu i{
+        font-size: 18px;
+    }
+    .user-notifications img{
+        border-radius: 50%;
+    }
+</style>
+<div class="left-panel bg-dark text-light">
+    <div class="dash-logo d-flex align-items-center justify-content-between py-3">
+        <div class="heading">
+            <img src="{% static 'assets/tc_logo.png' %}" alt="logo" class="img-fluid" width='30px'>
+            <small>C M S</small>
+        </div>
+        <div class="drop-menu">
+            <i class="bi bi-list px-2"></i>
+        </div>
+    </div>
+    <div class="left-panel-contents">
+        <ul>
+            <li>
+                <a href="/dashboard/"><i class="bi bi-speedometer2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'debtors' %}"><i class="bi bi-people"></i>
+                    Debtors
+                </a>
+            </li> 
+            <li>
+                <a href="{% url 'payment' %}"><i class="bi bi-credit-card"></i>
+                    Payments
+                </a>
+            </li>
+            {% if request.user.position == 'admin' %}
+                <li>
+                    <a href=""><i class="bi bi-person-plus"></i>
+                        Manage Users
+                    </a>
+                </li>
+            {% endif %}     
+        </ul>
+    </div>
+</div>

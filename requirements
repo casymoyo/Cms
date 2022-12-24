@@ -1,0 +1,14 @@
+notifications (near to due debtors)
+cancellation(reason)
+
+users creation
+users permissions
+
+{% comment %} totals on dashboard {% endcomment %} (partially)
+{% comment %} bad debts due (search date functionality) {% endcomment %} (done)
+{% comment %} overdues functionality{% endcomment %} (done)
+{% comment %} date filter{% endcomment %} (done)
+{% comment %} search filters{% endcomment %} (done)
+{% comment %} after deposit (due on 1,2 and final) {% endcomment %} (done)
+{% comment %} debtor id = product id {% endcomment %} (done)
+

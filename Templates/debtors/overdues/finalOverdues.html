@@ -1,0 +1,50 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<div class="dash">
+    {% include 'base/aside.html' %}
+    <div class="center-panel">
+        {% include 'base/header.html' %}
+        <section class="main-app-area mt-4">
+            <div class="container">
+                {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                            {% endfor %}
+                        </ul>
+                {% endif %}
+                <div class="heading d-flex justify-content-between align-items-center mb-4">
+                    <h4>Final Payment Overdues</h4>
+                    {% comment %} <div class="button d-flex">
+                        <form action="" method="get" class="px-2">
+                            <input type="text" name="q" value="not paid" hidden>
+                            <button class="btn btn btn-light" type="submit">Overdue Debtors</button>
+                        </form>
+                        <form action="" method="get">
+                            <input type="text" name="q" value="fully paid" hidden>
+                            <button class="btn btn btn-light" type="submit">Fully paid Debtors</button>
+                        </form>
+                    </div> {% endcomment %}
+                </div>
+                    <table class="table table-striped table-responsive table-hover">
+                        <caption>Final Payment Overdues</caption>
+                        <thead>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>Product</th>
+                        </thead>
+                        <tbody>
+                            {% for overdue in overdue_ninety %}
+                            <tr>
+                                <td><a href="{% url 'debtor' overdue.id %}" style="text-decoration:none;">{{overdue.name}}</a></td>
+                                <td>{{overdue.surname}}</td>
+                                <td>{{overdue.product}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            </div>
+        </section>
+</div>
+{% endblock content %}
