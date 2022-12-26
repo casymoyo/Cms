@@ -1,6 +1,12 @@
 from django.forms import ModelForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
 from . models import Debtor, Work, Product
 
+class createUserForm(UserCreationForm):
+    class Meta:
+        model = get_user_model()
+        fields = ['first_name', 'last_name', 'username', 'password1']
 class debtorForm(ModelForm):
     
     class Meta:

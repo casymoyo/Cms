@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from . models import User, Debtor, Work, Product
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from . forms import debtorForm, workForm, productForm, paymentForm
+from . forms import debtorForm, workForm, productForm, paymentForm, createUserForm
 
 
 def loginpage(request):
@@ -28,7 +28,14 @@ def logoutpage(request):
     logout(request)
     return redirect('/')
 
-    
+def createUser(request):
+    form = createUserForm()
+    if request.method == 'POST':
+        form = createUserForm(request.POST)
+        if form.is_valid:
+            form.save()  
+    return render(request,'user/createUser.html', {'form':form} )  
+
 def dashboard(request):
     debtors = Debtor.objects.all()
     total_amount = Debtor()

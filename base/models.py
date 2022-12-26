@@ -12,7 +12,7 @@ gender = (
 class User(AbstractUser):
     email = models.EmailField(unique=True, max_length=254)
     position = models.CharField(max_length=50, )
-    image = models.ImageField(upload_to='profile', blank = True)
+    image = models.ImageField(upload_to='profile', blank = True, default = 'profile/avatar.svg')
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []

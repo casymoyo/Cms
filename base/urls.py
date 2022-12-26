@@ -6,6 +6,9 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('logout/', views.logoutpage, name='logout'),
 
+    #users
+    path('createUser/', views.createUser, name='createUser'),
+
     # debtors
     path("debtors/", views.debtors, name="debtors"),
     path('debtor/<int:pk>/', views.debtor, name = 'debtor'),
